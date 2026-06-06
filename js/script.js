@@ -1,0 +1,208 @@
+
+// ── Data ──
+const categories = {
+  restaurants: {
+    emoji: '🍔', title: 'مطاعم', sub: 'أحدث عروض المطاعم',
+    color: '#FF6B35',
+    offers: [
+      { name: 'بيتزا كبيرة سوبريم', place: 'بيتزا بلازا', emoji: '🍕', bg: '#2D1810', price: '٦٥ ج', old: '٩٠ ج', badge: 'خصم ٢٨٪' },
+      { name: 'وجبة برجر دبل', place: 'بيرجر هاوس', emoji: '🍔', bg: '#1A1A0D', price: '٤٥ ج', old: '٦٠ ج', badge: 'الأكثر طلباً' },
+      { name: 'كشري بورشن كبير', place: 'أبو طارق', emoji: '🍜', bg: '#0D1A10', price: '٢٥ ج', old: '٣٥ ج', badge: 'خصم ٢٩٪' },
+      { name: 'فراخ مشوية كاملة', place: 'شيف فارم', emoji: '🍗', bg: '#1A1005', price: '١٢٠ ج', old: '١٥٠ ج', badge: 'عرض محدود' },
+    ]
+  },
+  grocery: {
+    emoji: '🛒', title: 'بقالة', sub: 'أفضل عروض البقالة',
+    color: '#4CAF50',
+    offers: [
+      { name: 'أرز مصري ٥ كيلو', place: 'أسواق المحروسة', emoji: '🌾', bg: '#0D1A0D', price: '٨٥ ج', old: '١١٠ ج', badge: 'خصم ٢٣٪' },
+      { name: 'زيت عافية ١.٨ لتر', place: 'سوبر ماركت النصر', emoji: '🫙', bg: '#1A1A0A', price: '٧٠ ج', old: '٩٠ ج', badge: 'وفر ٢٠ ج' },
+      { name: 'سكر ناعم ٢ كيلو', place: 'أسواق المحروسة', emoji: '🍬', bg: '#1A0D0D', price: '٣٠ ج', old: '٤٠ ج', badge: 'عرض الأسبوع' },
+    ]
+  },
+  dairy: {
+    emoji: '🥛', title: 'ألبان', sub: 'عروض الألبان والأجبان',
+    color: '#42A5F5',
+    offers: [
+      { name: 'لبن كاملة الدسم ١ لتر', place: 'منتجات بيتي', emoji: '🥛', bg: '#0A1020', price: '١٨ ج', old: '٢٢ ج', badge: 'طازج يومياً' },
+      { name: 'جبنة روم قديمة ٢٥٠ج', place: 'مصنع الجودة', emoji: '🧀', bg: '#1A1505', price: '٤٠ ج', old: '٥٥ ج', badge: 'خصم ٢٧٪' },
+      { name: 'زبادي طبيعي ٦ حبات', place: 'ألبان الحياة', emoji: '🥣', bg: '#0D1A15', price: '٣٥ ج', old: '٤٥ ج', badge: 'بدون حافظ' },
+    ]
+  }
+};
+
+let currentPage = 'page-home';
+let pageHistory = [];
+
+// ── Particles ──
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      --drift: ${(Math.random() - 0.5) * 100}px;
+      animation-duration: ${4 + Math.random() * 6}s;
+      animation-delay: ${Math.random() * 6}s;
+      width: ${1 + Math.random() * 3}px;
+      height: ${1 + Math.random() * 3}px;
+      opacity: 0;
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── Cursor ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('button, .order-card, .cat-card, .offer-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(2)'; ring.style.opacity = '0.4'; });
+  el.addEventListener('mouseleave', () => { ring.style.opacity = '1'; });
+});
+
+// ── Page Navigation ──
+function goTo(pageId) {
+  const trans = document.getElementById('transition');
+  trans.className = 'page-transition enter';
+
+  setTimeout(() => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    pageHistory.push(currentPage);
+    currentPage = pageId;
+    updateNavDots();
+    trans.className = 'page-transition exit';
+    animatePageIn(pageId);
+    window.scrollTo(0, 0);
+  }, 400);
+}
+
+function goBack() {
+  if (pageHistory.length > 0) {
+    const prev = pageHistory.pop();
+    const trans = document.getElementById('transition');
+    trans.className = 'page-transition enter';
+    setTimeout(() => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(prev).classList.add('active');
+      currentPage = prev;
+      updateNavDots();
+      trans.className = 'page-transition exit';
+      animatePageIn(prev);
+    }, 400);
+  }
+}
+
+function updateNavDots() {
+  const pages = ['page-home', 'page-order-type', 'page-offers', 'page-offers-detail'];
+  document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', pages[i] === currentPage);
+  });
+}
+
+function animatePageIn(pageId) {
+  if (pageId === 'page-order-type') animateOrderCards();
+  if (pageId === 'page-offers') animateCatCards();
+  if (pageId === 'page-offers-detail') animateOfferCards();
+}
+
+// ── Animate Cards ──
+function animateOrderCards() {
+  document.querySelectorAll('.order-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.animation = 'none';
+    setTimeout(() => {
+      card.style.animation = `card-in 0.55s cubic-bezier(.34,1.56,.64,1) ${i * 0.12}s both`;
+    }, 50);
+  });
+}
+
+function animateCatCards() {
+  document.querySelectorAll('.cat-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.animation = 'none';
+    setTimeout(() => {
+      card.style.animation = `card-in 0.55s cubic-bezier(.34,1.56,.64,1) ${i * 0.12}s both`;
+    }, 50);
+  });
+}
+
+function animateOfferCards() {
+  document.querySelectorAll('.offer-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.animation = 'none';
+    setTimeout(() => {
+      card.style.animation = `card-in 0.5s cubic-bezier(.34,1.56,.64,1) ${i * 0.1}s both`;
+    }, 50);
+  });
+}
+
+// ── Open Category ──
+function openCategory(key) {
+  const cat = categories[key];
+  document.getElementById('detailEmoji').textContent = cat.emoji;
+  document.getElementById('detailTitle').textContent = cat.title;
+  document.getElementById('detailSub').textContent = cat.sub;
+
+  const grid = document.getElementById('offersGrid');
+  grid.innerHTML = '';
+  cat.offers.forEach(offer => {
+    const card = document.createElement('div');
+    card.className = 'offer-card';
+    card.onclick = () => showToast('هذه العروض للعرض فقط 👁️');
+    card.innerHTML = `
+      <div class="offer-img" style="background:${offer.bg}">
+        <div class="offer-img-inner">${offer.emoji}</div>
+        <div class="offer-badge">${offer.badge}</div>
+      </div>
+      <div class="offer-body">
+        <div class="offer-name">${offer.name}</div>
+        <div class="offer-place">📍 ${offer.place}</div>
+        <div class="offer-price-row">
+          <span class="offer-price">${offer.price}</span>
+          <span class="offer-old-price">${offer.old}</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  goTo('page-offers-detail');
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Ripple ──
+document.querySelectorAll('.btn-main').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+    this.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  });
+});
+
+// ── Init ──
+createParticles();

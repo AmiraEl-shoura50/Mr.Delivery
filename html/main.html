@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستر ديليفري</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel =stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Background -->
+<div class="bg-noise"></div>
+<div class="grid-lines"></div>
+<div class="particles" id="particles"></div>
+
+<!-- Page Transition -->
+<div class="page-transition" id="transition"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast">عرض بس — مفيش شراء أو دفع 🙌</div>
+
+<!-- Nav Dots -->
+<div class="nav-dots" id="navDots">
+  <div class="nav-dot active" title="الرئيسية"></div>
+  <div class="nav-dot" title="نوع الأوردر"></div>
+  <div class="nav-dot" title="العروض"></div>
+  <div class="nav-dot" title="تفاصيل العروض"></div>
+</div>
+
+<!-- ══ HOME PAGE ══ -->
+<div class="page active" id="page-home">
+  <div class="home-inner" style="margin:auto">
+    <div class="logo-wrap">
+      <div class="logo-icon">🛵</div>
+      <div class="logo-text">مستر <span>ديليفري</span></div>
+    </div>
+
+    <p class="hero-tagline">خدمة التوصيل الأسرع في المنطقة</p>
+
+    <h1 class="hero-title">
+      اطلب من أي مكان<br>
+      <span class="highlight">نوصّلهولك</span>
+    </h1>
+
+    <p class="hero-sub">
+      طلبات شراء من المحلات، توصيل بين الأماكن،<br>
+      وتوزيع الشحنات — كله في مكان واحد
+    </p>
+
+    <div class="home-buttons">
+      <button class="btn-main btn-primary" onclick="goTo('page-order-type')" id="btnOrder">
+        <div class="btn-content">
+          <span class="btn-label">🛒 أوردر طلبات</span>
+          <span class="btn-desc">اطلب من محلاتك المفضلة أو وصّل حاجة</span>
+        </div>
+        <div class="btn-arrow">←</div>
+      </button>
+
+      <button class="btn-main btn-secondary" onclick="goTo('page-offers')" id="btnOffers">
+        <div class="btn-content">
+          <span class="btn-label">🔥 عروض ومنتجات</span>
+          <span class="btn-desc">شوف أحدث العروض والخصومات المتاحة</span>
+        </div>
+        <div class="btn-arrow">←</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ORDER TYPE PAGE ══ -->
+<div class="page" id="page-order-type">
+  <div style="max-width:700px;width:100%;margin:auto;padding:1rem">
+    <button class="back-btn" onclick="goBack()">→ رجوع</button>
+
+    <div class="page-header">
+      <h2>إيه اللي عايزه؟</h2>
+      <p>اختار نوع الطلب وهنكمل معاك</p>
+    </div>
+
+    <div class="order-cards">
+      <div class="order-card" id="card-buy" onclick="showToast('صفحة الشراء — بتبنيها هدير! 💚')">
+        <div class="card-icon-wrap">🛍️</div>
+        <div class="card-title">طلب شراء</div>
+        <div class="card-desc">اشتري من محلاتك ومطاعمك المفضلة ونوصّلك</div>
+        <div class="card-tag">لحد ٣ محلات</div>
+      </div>
+
+      <div class="order-card" id="card-delivery" onclick="showToast('صفحة التوصيل — بتبنيها هدير! 💚')">
+        <div class="card-icon-wrap">📦</div>
+        <div class="card-title">طلب توصيل</div>
+        <div class="card-desc">عندك حاجة تتبعتها لحد تاني؟ إحنا بنوصّلها</div>
+        <div class="card-tag">من لحد</div>
+      </div>
+
+      <div class="order-card" id="card-dist" onclick="showToast('صفحة التوزيع — بيبنيها محمد! 🟡')">
+        <div class="card-icon-wrap">🚚</div>
+        <div class="card-title">توزيع شحنة</div>
+        <div class="card-desc">شحنة كبيرة تتوزع جوه وبره الزيات؟ إحنا هنا</div>
+        <div class="card-tag">داخل وخارج الزيات</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OFFERS PAGE ══ -->
+<div class="page" id="page-offers">
+  <div style="max-width:900px;width:100%;margin:auto">
+    <button class="back-btn" onclick="goBack()">→ رجوع</button>
+
+    <div class="offers-header">
+      <h2>🔥 العروض والمنتجات</h2>
+      <p>اختار التصنيف اللي يهمك وشوف أحدث العروض</p>
+    </div>
+
+    <div class="categories-grid">
+      <div class="cat-card" onclick="openCategory('restaurants')">
+        <span class="cat-emoji">🍔</span>
+        <div class="cat-name">مطاعم</div>
+        <div class="cat-count">١٢ عرض متاح</div>
+      </div>
+      <div class="cat-card" onclick="openCategory('grocery')">
+        <span class="cat-emoji">🛒</span>
+        <div class="cat-name">بقالة</div>
+        <div class="cat-count">٨ عروض متاحة</div>
+      </div>
+      <div class="cat-card" onclick="openCategory('dairy')">
+        <span class="cat-emoji">🥛</span>
+        <div class="cat-name">ألبان</div>
+        <div class="cat-count">٦ عروض متاحة</div>
+      </div>
+    </div>
+
+    <div class="view-only-banner">
+      👁️ صفحة العروض للاطلاع بس — مش هتقدر تشتري أو تدفع من هنا
+    </div>
+  </div>
+</div>
+
+<!-- ══ OFFERS DETAIL PAGE ══ -->
+<div class="page" id="page-offers-detail">
+  <div style="max-width:900px;width:100%;margin:auto">
+    <button class="back-btn" onclick="goTo('page-offers')">→ رجوع للتصنيفات</button>
+
+    <div class="detail-header" id="detailHeader">
+      <span class="detail-emoji" id="detailEmoji">🍔</span>
+      <div>
+        <h2 id="detailTitle">مطاعم</h2>
+        <p id="detailSub">عروض المطاعم المتاحة</p>
+      </div>
+    </div>
+
+    <div class="offers-grid" id="offersGrid"></div>
+
+    <div class="view-only-banner" style="margin-top:1.5rem">
+      👁️ هذه العروض للعرض فقط — التواصل عبر الواتساب للطلب
+    </div>
+  </div>
+</div>
+
+<script src="../js/script.js" defer></script>
+</body>
+</html>
