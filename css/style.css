@@ -583,9 +583,201 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
+  /* ── Form & Distribution Page Styles ── */
+  .form-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 2rem 1.8rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .form-section.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .section-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 0.6rem;
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.4rem;
+    position: relative;
+  }
+  .input-group:last-child {
+    margin-bottom: 0;
+  }
+  .input-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .input-group label .required {
+    color: var(--primary);
+    margin-right: 4px;
+  }
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrapper input {
+    width: 100%;
+    padding: 1rem 3.2rem 1rem 1.2rem; /* Right-padding for icon in RTL */
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .input-wrapper input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255,75,18,0.04);
+    box-shadow: 0 0 20px rgba(255,75,18,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .input-wrapper .input-icon {
+    position: absolute;
+    right: 1.2rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  .input-wrapper input:focus + .input-icon {
+    color: var(--primary);
+    transform: scale(1.1);
+  }
+  .inputs-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  .error-msg {
+    font-size: 0.78rem;
+    color: var(--primary);
+    margin-top: 6px;
+    display: none;
+    font-weight: 600;
+    animation: err-fade-in 0.3s ease forwards;
+  }
+  .error-msg.show {
+    display: block;
+  }
+  @keyframes err-fade-in {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .pricing-rates {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.01);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+  }
+  .rate-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rate-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .rate-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(255,179,71,0.1);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,179,71,0.15);
+  }
+  .total-display {
+    background: linear-gradient(135deg, rgba(255,75,18,0.12) 0%, rgba(255,179,71,0.04) 100%);
+    border: 1px solid rgba(255,75,18,0.25);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .total-label {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .total-amount-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .total-amount {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #fff;
+    font-family: 'Tajawal', sans-serif;
+    text-shadow: 0 0 25px rgba(255,75,18,0.6);
+    transition: transform 0.25s cubic-bezier(.175, .885, .32, 1.275);
+    display: inline-block;
+  }
+  .total-amount.pulse {
+    transform: scale(1.18);
+    color: var(--accent);
+  }
+  .total-currency {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--primary-light);
+  }
+  .btn-submit-whatsapp {
+    background: #25D366;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(37,211,102,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .btn-submit-whatsapp:hover {
+    background: #20ba59;
+    box-shadow: 0 16px 48px rgba(37,211,102,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-submit-whatsapp .btn-arrow {
+    background: rgba(255,255,255,0.15);
+  }
+  .btn-submit-whatsapp:hover .btn-arrow {
+    background: rgba(255,255,255,0.25);
+  }
+
   /* ── Responsive ── */
   @media (max-width: 480px) {
     .home-buttons { gap: 0.8rem; }
     .order-cards { grid-template-columns: 1fr; }
     .nav-dots { display: none; }
+    .inputs-row { grid-template-columns: 1fr; gap: 0.8rem; }
+    .form-section { padding: 1.5rem 1.2rem; }
   }
