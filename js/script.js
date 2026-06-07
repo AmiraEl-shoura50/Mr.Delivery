@@ -1,3 +1,5 @@
+const whatsappNumber = "20 10 08995927";
+
 
 // ── Data ──
 const categories = {
@@ -105,9 +107,14 @@ function goBack() {
 }
 
 function updateNavDots() {
+  const pages = ['page-home', 'page-order-type', 'page-offers', 'page-offers-detail'];
+  let activeIndex = pages.indexOf(currentPage);
+  if (currentPage === 'page-buy' || currentPage === 'page-delivery') {
+    activeIndex = 1;
+  }
   const pages = ['page-home', 'page-order-type', 'page-offers', 'page-offers-detail', 'page-dist'];
   document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', pages[i] === currentPage);
+    dot.classList.toggle('active', i === activeIndex);
   });
 }
 
@@ -115,6 +122,8 @@ function animatePageIn(pageId) {
   if (pageId === 'page-order-type') animateOrderCards();
   if (pageId === 'page-offers') animateCatCards();
   if (pageId === 'page-offers-detail') animateOfferCards();
+  if (pageId === 'page-buy') initBuyPage();
+  if (pageId === 'page-delivery') initDeliveryPage();
   if (pageId === 'page-dist') animateFormSections();
 }
 
@@ -216,6 +225,300 @@ document.querySelectorAll('.btn-main').forEach(btn => {
 
 // ── Init ──
 createParticles();
+
+
+// ══════════════════════════════
+// FORM OPERATIONS & WHATSAPP API
+// ══════════════════════════════
+
+let storeCounter = 0;
+
+function initBuyPage() {
+  // Clear generic customer info inputs
+  document.getElementById('buy-name').value = '';
+  document.getElementById('buy-phone').value = '';
+  document.getElementById('buy-address').value = '';
+  
+  // Clear and reset stores list container
+  const container = document.getElementById('pdf-stores-container');
+  container.innerHTML = '';
+  
+  // Add first store block by default
+  addNewStore();
+}
+
+function initDeliveryPage() {
+  document.getElementById('del-from').value = '';
+  document.getElementById('del-from-phone').value = '';
+  document.getElementById('del-to').value = '';
+  document.getElementById('del-to-phone').value = '';
+  document.getElementById('del-details').value = '';
+}
+
+function createStoreElement(storeId) {
+  const block = document.createElement('div');
+  block.className = 'pdf-store-block';
+  block.id = storeId;
+  
+  block.innerHTML = `
+    <div class="pdf-store-header">
+      <span class="pdf-store-title">المحل <span class="store-num-display"></span> /</span>
+      <button type="button" class="pdf-btn-remove-store" style="display:none;" onclick="removeStore('${storeId}')">
+        <i class="fa-solid fa-trash"></i> حذف المحل
+      </button>
+    </div>
+    
+    <div class="pdf-form-group">
+      <label class="pdf-label">اسم المحل /</label>
+      <input type="text" class="pdf-input pdf-store-name" required placeholder="ادخل اسم المحل">
+    </div>
+    
+    <div class="pdf-form-group">
+      <label class="pdf-label">الطلب من المحل /</label>
+      <div class="pdf-items-list">
+        <!-- Item rows will go here dynamically -->
+      </div>
+      <button type="button" class="pdf-btn-add-item" onclick="addNewItemToStore('${storeId}')">+ اضافة بند</button>
+    </div>
+  `;
+  
+  return block;
+}
+
+function addNewStore() {
+  const container = document.getElementById('pdf-stores-container');
+  const storeBlocks = container.children;
+  
+  if (storeBlocks.length >= 3) {
+    showToast('الحد الأقصى هو ٣ محلات للطلب ⚠️');
+    return;
+  }
+  
+  const storeId = `pdf-store-block-${storeCounter++}`;
+  const storeEl = createStoreElement(storeId);
+  container.appendChild(storeEl);
+  
+  // Add first item input row by default in the new store block
+  addItemRow(storeEl);
+  
+  updateStoreLabels();
+}
+
+function removeStore(storeId) {
+  const storeEl = document.getElementById(storeId);
+  if (storeEl) {
+    storeEl.remove();
+    updateStoreLabels();
+  }
+}
+
+function updateStoreLabels() {
+  const container = document.getElementById('pdf-stores-container');
+  const stores = Array.from(container.children);
+  
+  stores.forEach((storeBlock, idx) => {
+    // Update store numbering display
+    const numDisplay = storeBlock.querySelector('.store-num-display');
+    if (numDisplay) {
+      numDisplay.textContent = idx + 1;
+    }
+    
+    // Show remove button for stores other than the first
+    const removeBtn = storeBlock.querySelector('.pdf-btn-remove-store');
+    if (removeBtn) {
+      removeBtn.style.display = idx === 0 ? 'none' : 'flex';
+    }
+  });
+  
+  // Update visibility of Add Store Button & Limit Message
+  const limitMsg = document.getElementById('pdf-limit-message');
+  const addStoreSection = document.getElementById('pdf-add-store-section');
+  
+  if (stores.length >= 3) {
+    if (limitMsg) limitMsg.style.display = 'block';
+    if (addStoreSection) addStoreSection.style.display = 'none';
+  } else {
+    if (limitMsg) limitMsg.style.display = 'none';
+    if (addStoreSection) addStoreSection.style.display = 'block';
+  }
+}
+
+function addNewItemToStore(storeId) {
+  const storeEl = document.getElementById(storeId);
+  if (storeEl) {
+    addItemRow(storeEl);
+  }
+}
+
+function addItemRow(storeEl) {
+  const itemsList = storeEl.querySelector('.pdf-items-list');
+  const itemCount = itemsList.children.length;
+  
+  const row = document.createElement('div');
+  row.className = 'pdf-item-row';
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'pdf-input pdf-item-input';
+  input.required = true;
+  input.placeholder = 'الطلب من المحل /';
+  
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'pdf-btn-remove-item';
+  removeBtn.textContent = `- ${itemCount + 1}`;
+  removeBtn.onclick = function() {
+    removeItemRow(row, storeEl);
+  };
+  
+  row.appendChild(input);
+  row.appendChild(removeBtn);
+  itemsList.appendChild(row);
+  
+  updateItemIndices(storeEl);
+}
+
+function removeItemRow(itemRowEl, storeEl) {
+  const itemsList = storeEl.querySelector('.pdf-items-list');
+  if (itemsList.children.length <= 1) {
+    showToast('يجب كتابة طلب واحد على الأقل للمحل ⚠️');
+    return;
+  }
+  itemRowEl.remove();
+  updateItemIndices(storeEl);
+}
+
+function updateItemIndices(storeEl) {
+  const itemsList = storeEl.querySelector('.pdf-items-list');
+  Array.from(itemsList.children).forEach((row, idx) => {
+    const btn = row.querySelector('.pdf-btn-remove-item');
+    if (btn) {
+      btn.textContent = `- ${idx + 1}`;
+    }
+  });
+}
+
+// Validation & Submission for Purchase Orders
+function handleBuySubmit() {
+  const name = document.getElementById('buy-name').value.trim();
+  const phone = document.getElementById('buy-phone').value.trim();
+  const address = document.getElementById('buy-address').value.trim();
+  
+  if (!name || !phone || !address) {
+    showToast('برجاء ملء بيانات العميل كاملة ⚠️');
+    return;
+  }
+  
+  const storeBlocks = document.querySelectorAll('.pdf-store-block');
+  if (storeBlocks.length === 0) {
+    showToast('برجاء إضافة محل واحد على الأقل ⚠️');
+    return;
+  }
+  
+  const storesData = [];
+  let isFormIncomplete = false;
+  
+  storeBlocks.forEach((block) => {
+    const storeName = block.querySelector('.pdf-store-name').value.trim();
+    if (!storeName) {
+      isFormIncomplete = true;
+      return;
+    }
+    
+    const items = [];
+    const itemInputs = block.querySelectorAll('.pdf-item-input');
+    itemInputs.forEach(input => {
+      const val = input.value.trim();
+      if (!val) {
+        isFormIncomplete = true;
+      } else {
+        items.push(val);
+      }
+    });
+    
+    if (items.length === 0) {
+      isFormIncomplete = true;
+    }
+    
+    storesData.push({
+      name: storeName,
+      items: items
+    });
+  });
+  
+  if (isFormIncomplete) {
+    showToast('برجاء ملء جميع حقول المحلات والطلبات ⚠️');
+    return;
+  }
+  
+  // Format WhatsApp message
+  const msg = formatBuyMessage(name, phone, address, storesData);
+  sendWhatsAppMessage(msg);
+}
+
+// Formatting Purchase Order Message
+function formatBuyMessage(name, phone, address, stores) {
+  let msg = `*طلب شراء جديد 🛒*\n`;
+  msg += `-------------------------\n`;
+  msg += `*الاسم:* ${name}\n`;
+  msg += `*الفون:* ${phone}\n`;
+  msg += `*العنوان:* ${address}\n`;
+  msg += `-------------------------\n`;
+  msg += `*الطلبات والمحلات:*\n`;
+  
+  stores.forEach((store, idx) => {
+    msg += `\n*(${idx + 1}) اسم المحل:* ${store.name}\n`;
+    msg += `*الطلبات:*\n`;
+    store.items.forEach((item) => {
+      msg += `  - ${item}\n`;
+    });
+  });
+  
+  msg += `\n-------------------------\n`;
+  msg += `تم الإرسال من موقع مستر ديليفري 🛵`;
+  return msg;
+}
+
+// Validation & Submission for Delivery Orders
+function handleDeliverySubmit() {
+  const from = document.getElementById('del-from').value.trim();
+  const fromPhone = document.getElementById('del-from-phone').value.trim();
+  const to = document.getElementById('del-to').value.trim();
+  const toPhone = document.getElementById('del-to-phone').value.trim();
+  const details = document.getElementById('del-details').value.trim();
+  
+  if (!from || !fromPhone || !to || !toPhone || !details) {
+    showToast('برجاء ملء جميع حقول التوصيل ⚠️');
+    return;
+  }
+  
+  const msg = formatDeliveryMessage(from, fromPhone, to, toPhone, details);
+  sendWhatsAppMessage(msg);
+}
+
+// Formatting Delivery Order Message
+function formatDeliveryMessage(from, fromPhone, to, toPhone, details) {
+  let msg = `*طلب توصيل جديد 📦*\n`;
+  msg += `-------------------------\n`;
+  msg += `*هنستلم من:* ${from}\n`;
+  msg += `*من الرقم دا:* ${fromPhone}\n`;
+  msg += `-------------------------\n`;
+  msg += `*هنوصله الى:* ${to}\n`;
+  msg += `*على الرقم دا:* ${toPhone}\n`;
+  msg += `-------------------------\n`;
+  msg += `*الاوردر عبارة عن:*\n`;
+  msg += `${details}\n`;
+  msg += `-------------------------\n`;
+  msg += `تم الإرسال من موقع مستر ديليفري 🛵`;
+  return msg;
+}
+
+// Sending WhatsApp API Message
+function sendWhatsAppMessage(text) {
+  const cleanPhone = whatsappNumber.replace(/\D/g, ''); // strip any non-digit chars
+  const encodedText = encodeURIComponent(text);
+  const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`;
+  window.open(url, '_blank');
 initDistForm();
 
 // ── Shipment Distribution Form Logic ──

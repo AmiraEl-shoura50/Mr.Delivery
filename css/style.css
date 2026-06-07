@@ -781,3 +781,293 @@
     .inputs-row { grid-template-columns: 1fr; gap: 0.8rem; }
     .form-section { padding: 1.5rem 1.2rem; }
   }
+
+  /* ══════════════════════════════
+     PDF MOCKUP STYLING (FORMS)
+  ══════════════════════════════ */
+  #page-buy, #page-delivery {
+    background: #FFA31A;
+    color: #000000;
+    min-height: 100vh;
+  }
+
+  .pdf-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background: #FFA31A;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+
+  .pdf-header {
+    background: #000000;
+    padding: 20px 15px 15px 15px;
+    text-align: center;
+    position: relative;
+    border-bottom: 2px solid #000000;
+  }
+
+  .pdf-logo-main {
+    color: #FFB347;
+    font-size: 24px;
+    font-weight: 900;
+    font-family: 'Tajawal', sans-serif;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  .pdf-logo-sub {
+    color: #FFB347;
+    font-size: 11px;
+    letter-spacing: 5px;
+    font-family: 'Tajawal', sans-serif;
+    margin-top: 2px;
+    text-indent: 5px; /* offset the spacing on the left */
+  }
+
+  .pdf-back-btn {
+    position: absolute;
+    top: 22px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #FFB347;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .pdf-back-btn:hover {
+    opacity: 0.8;
+  }
+
+  .pdf-body {
+    padding: 2rem 1.5rem 3rem 1.5rem;
+    position: relative;
+    direction: rtl;
+  }
+
+  .pdf-hamburger {
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 24px;
+    cursor: pointer;
+  }
+  .pdf-hamburger span {
+    width: 100%;
+    height: 3px;
+    background-color: #000000;
+    border-radius: 2px;
+  }
+
+  .pdf-form-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1.8rem;
+    color: #000000;
+    text-align: right;
+  }
+
+  .pdf-form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .pdf-label {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #000000;
+    text-align: right;
+  }
+
+  .pdf-input, .pdf-textarea {
+    width: 100%;
+    background-color: #FFA31A;
+    border: 2.5px solid #000000;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #000000;
+    outline: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  .pdf-input:focus, .pdf-textarea:focus {
+    background-color: #ffb533;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+  }
+  .pdf-input::placeholder, .pdf-textarea::placeholder {
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 500;
+  }
+
+  .pdf-textarea {
+    resize: vertical;
+  }
+
+  /* Dynamic Store Blocks */
+  .pdf-store-block {
+    margin-top: 1.5rem;
+    border-top: 2px dashed rgba(0, 0, 0, 0.2);
+    padding-top: 1.5rem;
+    animation: pdf-fade-in 0.3s ease;
+  }
+
+  .pdf-store-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+  }
+
+  .pdf-store-title {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #000000;
+  }
+
+  .pdf-btn-remove-store {
+    background: none;
+    border: none;
+    color: #cc0000;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.2s;
+  }
+  .pdf-btn-remove-store:hover {
+    opacity: 0.8;
+  }
+
+  /* Item list styling */
+  .pdf-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .pdf-item-input {
+    flex-grow: 1;
+  }
+
+  .pdf-btn-remove-item {
+    background-color: #FFA31A;
+    border: 2.5px solid #000000;
+    border-radius: 8px;
+    height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    direction: ltr; /* to show minus sign before index properly */
+  }
+  .pdf-btn-remove-item:hover {
+    background-color: #000000;
+    color: #FFA31A;
+  }
+
+  .pdf-btn-add-item {
+    background-color: #FFA31A;
+    border: 2.5px solid #000000;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #000000;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
+    transition: background-color 0.2s;
+  }
+  .pdf-btn-add-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  /* Actions buttons styling */
+  .pdf-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pdf-btn-black {
+    background-color: #000000;
+    color: #FFA31A;
+    border: 2.5px solid #000000;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  .pdf-btn-black:hover {
+    background-color: #1a1a1a;
+    transform: translateY(-2px);
+  }
+  .pdf-btn-black:active {
+    transform: translateY(0);
+  }
+
+  .pdf-or-text {
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #000000;
+    margin: 8px 0;
+  }
+
+  .pdf-limit-text {
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #000000;
+    margin: 15px 0 5px 0;
+    padding: 10px;
+    border: 2px dashed #000000;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  @keyframes pdf-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }

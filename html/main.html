@@ -88,14 +88,14 @@
     </div>
 
     <div class="order-cards">
-      <div class="order-card" id="card-buy" onclick="showToast('صفحة الشراء — بتبنيها هدير! 💚')">
+      <div class="order-card" id="card-buy" onclick="goTo('page-buy')">
         <div class="card-icon-wrap">🛍️</div>
         <div class="card-title">طلب شراء</div>
         <div class="card-desc">اشتري من محلاتك ومطاعمك المفضلة ونوصّلك</div>
         <div class="card-tag">لحد ٣ محلات</div>
       </div>
 
-      <div class="order-card" id="card-delivery" onclick="showToast('صفحة التوصيل — بتبنيها هدير! 💚')">
+      <div class="order-card" id="card-delivery" onclick="goTo('page-delivery')">
         <div class="card-icon-wrap">📦</div>
         <div class="card-title">طلب توصيل</div>
         <div class="card-desc">عندك حاجة تتبعتها لحد تاني؟ إحنا بنوصّلها</div>
@@ -167,6 +167,119 @@
   </div>
 </div>
 
+<!-- ══ PURCHASE ORDER PAGE (صفحة طلب شراء) ══ -->
+<div class="page" id="page-buy">
+  <div class="pdf-container">
+    <!-- Header -->
+    <div class="pdf-header">
+      <button class="pdf-back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      <div class="pdf-logo-main">MR.DELIVERY</div>
+      <div class="pdf-logo-sub">C O M P A N Y</div>
+    </div>
+    
+    <!-- Body -->
+    <div class="pdf-body">
+      <!-- Hamburger Menu icon (Visual only, to match PDF design) -->
+      <div class="pdf-hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      
+      <h2 class="pdf-form-title">أوردر طلبات :</h2>
+      
+      <form id="buy-order-form" onsubmit="event.preventDefault(); handleBuySubmit();">
+        <div class="pdf-form-group">
+          <label class="pdf-label">الاسم /</label>
+          <input type="text" id="buy-name" class="pdf-input" required placeholder="ادخل اسمك">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">الفون /</label>
+          <input type="tel" id="buy-phone" class="pdf-input" required placeholder="ادخل رقم التليفون">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">العنوان /</label>
+          <input type="text" id="buy-address" class="pdf-input" required placeholder="ادخل العنوان">
+        </div>
+        
+        <!-- Stores dynamic container -->
+        <div id="pdf-stores-container">
+          <!-- Store blocks will be inserted here dynamically -->
+        </div>
+        
+        <!-- Limit Message (hidden by default) -->
+        <div id="pdf-limit-message" class="pdf-limit-text" style="display: none;">
+          تم الوصول للحد الأقصى من المحلات للطلب. ارسل طلبك الآن.
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="pdf-actions">
+          <div id="pdf-add-store-section">
+            <button type="button" class="pdf-btn-black" onclick="addNewStore()">اضافة محل اخر</button>
+            <div class="pdf-or-text">أو</div>
+          </div>
+          <button type="submit" class="pdf-btn-black">ارسال الاوردر على واتساب</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DELIVERY ORDER PAGE (صفحة طلب توصيل) ══ -->
+<div class="page" id="page-delivery">
+  <div class="pdf-container">
+    <!-- Header -->
+    <div class="pdf-header">
+      <button class="pdf-back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      <div class="pdf-logo-main">MR.DELIVERY</div>
+      <div class="pdf-logo-sub">C O M P A N Y</div>
+    </div>
+    
+    <!-- Body -->
+    <div class="pdf-body">
+      <!-- Hamburger Menu icon (Visual only, to match PDF design) -->
+      <div class="pdf-hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      
+      <h2 class="pdf-form-title">أوردر توصيل :</h2>
+      
+      <form id="delivery-order-form" onsubmit="event.preventDefault(); handleDeliverySubmit();">
+        <div class="pdf-form-group">
+          <label class="pdf-label">هنستلم من /</label>
+          <input type="text" id="del-from" class="pdf-input" required placeholder="ادخل مكان الاستلام">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">من الرقم دا /</label>
+          <input type="tel" id="del-from-phone" class="pdf-input" required placeholder="رقم تليفون المستلم منه">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">هنوصله الى /</label>
+          <input type="text" id="del-to" class="pdf-input" required placeholder="ادخل مكان التوصيل">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">على الرقم دا /</label>
+          <input type="tel" id="del-to-phone" class="pdf-input" required placeholder="رقم تليفون المستلم">
+        </div>
+        
+        <div class="pdf-form-group">
+          <label class="pdf-label">الاوردر عبارة عن /</label>
+          <textarea id="del-details" class="pdf-textarea" required placeholder="تفاصيل الاوردر كاملة" rows="4"></textarea>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="pdf-actions">
+          <button type="submit" class="pdf-btn-black">ارسال الاوردر على واتساب</button>
+        </div>
+      </form>
+    </div>
 <!-- ══ SHIPMENT DISTRIBUTION PAGE ══ -->
 <div class="page" id="page-dist">
   <div style="max-width: 600px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
