@@ -34,6 +34,7 @@
   <div class="nav-dot" title="نوع الأوردر"></div>
   <div class="nav-dot" title="العروض"></div>
   <div class="nav-dot" title="تفاصيل العروض"></div>
+  <div class="nav-dot" title="توزيع شحنة"></div>
 </div>
 
 <!-- ══ HOME PAGE ══ -->
@@ -101,7 +102,7 @@
         <div class="card-tag">من لحد</div>
       </div>
 
-      <div class="order-card" id="card-dist" onclick="showToast('صفحة التوزيع — بيبنيها محمد! 🟡')">
+      <div class="order-card" id="card-dist" onclick="goTo('page-dist')">
         <div class="card-icon-wrap">🚚</div>
         <div class="card-title">توزيع شحنة</div>
         <div class="card-desc">شحنة كبيرة تتوزع جوه وبره الزيات؟ إحنا هنا</div>
@@ -279,6 +280,95 @@
         </div>
       </form>
     </div>
+<!-- ══ SHIPMENT DISTRIBUTION PAGE ══ -->
+<div class="page" id="page-dist">
+  <div style="max-width: 600px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
+    <button class="back-btn" onclick="goBack()">→ رجوع</button>
+
+    <div class="page-header">
+      <h2>🚚 توزيع شحنة جديدة</h2>
+      <p>املا بيانات الشحنة وسيتم حساب التكلفة الإجمالية تلقائياً</p>
+    </div>
+
+    <form id="dist-form" onsubmit="event.preventDefault(); submitDistForm();" novalidate>
+      <!-- Section 1: Sender Details -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fa-solid fa-user"></i> بيانات المرسِل</h3>
+        <div class="input-group">
+          <label for="sender-name">اسم المرسِل <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <input type="text" id="sender-name" placeholder="أدخل اسمك بالكامل" required>
+            <i class="fa-solid fa-user input-icon"></i>
+          </div>
+          <span class="error-msg" id="error-sender-name">برجاء إدخال اسم المرسِل</span>
+        </div>
+
+        <div class="input-group">
+          <label for="sender-phone">رقم تليفون المرسِل <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <input type="tel" id="sender-phone" placeholder="مثال: 01012345678" required>
+            <i class="fa-solid fa-phone input-icon"></i>
+          </div>
+          <span class="error-msg" id="error-sender-phone">برجاء إدخال رقم تليفون مصري صحيح</span>
+        </div>
+      </div>
+
+      <!-- Section 2: Shipment Details -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fa-solid fa-box"></i> تفاصيل الشحنة</h3>
+        <div class="inputs-row">
+          <div class="input-group">
+            <label for="orders-inside">عدد الأوردرات داخل الزيات <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="number" id="orders-inside" min="0" value="0" required>
+              <i class="fa-solid fa-city input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-orders-inside">العدد يجب أن يكون 0 أو أكثر</span>
+          </div>
+
+          <div class="input-group">
+            <label for="orders-outside">عدد الأوردرات خارج الزيات <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="number" id="orders-outside" min="0" value="0" required>
+              <i class="fa-solid fa-truck-ramp-box input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-orders-outside">العدد يجب أن يكون 0 أو أكثر</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Invoice & Pricing -->
+      <div class="form-section">
+        <h3 class="section-title"><i class="fa-solid fa-receipt"></i> الفاتورة التقديرية</h3>
+        <div class="pricing-rates">
+          <div class="rate-item">
+            <span class="rate-label">سعر الأوردر داخل الزيات:</span>
+            <span class="rate-val">15 ج</span>
+          </div>
+          <div class="rate-item">
+            <span class="rate-label">سعر الأوردر خارج الزيات:</span>
+            <span class="rate-val">25 ج</span>
+          </div>
+        </div>
+        
+        <div class="total-display">
+          <span class="total-label">إجمالي الفاتورة</span>
+          <div class="total-amount-wrap">
+            <span class="total-amount" id="total-amount">0</span>
+            <span class="total-currency">جنيه</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-main btn-submit-whatsapp" id="btn-submit">
+        <div class="btn-content">
+          <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت على الواتساب</span>
+          <span class="btn-desc">مراجعة البيانات وإرسال الطلب فوراً</span>
+        </div>
+        <div class="btn-arrow">←</div>
+      </button>
+    </form>
   </div>
 </div>
 

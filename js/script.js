@@ -112,6 +112,7 @@ function updateNavDots() {
   if (currentPage === 'page-buy' || currentPage === 'page-delivery') {
     activeIndex = 1;
   }
+  const pages = ['page-home', 'page-order-type', 'page-offers', 'page-offers-detail', 'page-dist'];
   document.querySelectorAll('.nav-dot').forEach((dot, i) => {
     dot.classList.toggle('active', i === activeIndex);
   });
@@ -123,6 +124,16 @@ function animatePageIn(pageId) {
   if (pageId === 'page-offers-detail') animateOfferCards();
   if (pageId === 'page-buy') initBuyPage();
   if (pageId === 'page-delivery') initDeliveryPage();
+  if (pageId === 'page-dist') animateFormSections();
+}
+
+function animateFormSections() {
+  document.querySelectorAll('#page-dist .form-section').forEach((sec, i) => {
+    sec.classList.remove('show');
+    setTimeout(() => {
+      sec.classList.add('show');
+    }, i * 150);
+  });
 }
 
 // ── Animate Cards ──
@@ -508,4 +519,188 @@ function sendWhatsAppMessage(text) {
   const encodedText = encodeURIComponent(text);
   const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`;
   window.open(url, '_blank');
+initDistForm();
+
+// ── Shipment Distribution Form Logic ──
+const PRICE_INSIDE = 15;
+const PRICE_OUTSIDE = 25;
+const WHATSAPP_PHONE = '201000000000'; // Placeholder client whatsapp number
+
+function initDistForm() {
+  const insideInput = document.getElementById('orders-inside');
+  const outsideInput = document.getElementById('orders-outside');
+  const senderName = document.getElementById('sender-name');
+  const senderPhone = document.getElementById('sender-phone');
+
+  if (!insideInput || !outsideInput) return;
+
+  // Real-time calculation triggers
+  insideInput.addEventListener('input', calculateTotal);
+  outsideInput.addEventListener('input', calculateTotal);
+
+  // Clear errors when the user starts typing
+  senderName.addEventListener('input', () => clearError('sender-name'));
+  senderPhone.addEventListener('input', () => clearError('sender-phone'));
+  insideInput.addEventListener('input', () => clearError('orders-inside'));
+  outsideInput.addEventListener('input', () => clearError('orders-outside'));
+
+  // Custom cursor hover adjustments for form inputs
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.querySelectorAll('#page-dist input').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      if (cursor && ring) {
+        cursor.style.transform = 'translate(-50%, -50%) scale(0.6)';
+        ring.style.opacity = '0';
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (cursor && ring) {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        ring.style.opacity = '1';
+      }
+    });
+  });
+}
+
+function calculateTotal() {
+  const insideInput = document.getElementById('orders-inside');
+  const outsideInput = document.getElementById('orders-outside');
+  const totalAmountEl = document.getElementById('total-amount');
+
+  let insideCount = parseInt(insideInput.value) || 0;
+  let outsideCount = parseInt(outsideInput.value) || 0;
+
+  // Force non-negative numbers
+  if (insideCount < 0) {
+    insideInput.value = 0;
+    insideCount = 0;
+  }
+  if (outsideCount < 0) {
+    outsideInput.value = 0;
+    outsideCount = 0;
+  }
+
+  const total = (insideCount * PRICE_INSIDE) + (outsideCount * PRICE_OUTSIDE);
+  
+  if (totalAmountEl.textContent !== String(total)) {
+    totalAmountEl.textContent = total;
+    // Animate total change with a quick pulse scale effect
+    totalAmountEl.classList.add('pulse');
+    setTimeout(() => totalAmountEl.classList.remove('pulse'), 250);
+  }
+}
+
+function showError(fieldId, msg) {
+  const errorEl = document.getElementById(`error-${fieldId}`);
+  const inputEl = document.getElementById(fieldId);
+  if (errorEl) {
+    errorEl.textContent = msg;
+    errorEl.classList.add('show');
+  }
+  if (inputEl) {
+    inputEl.style.borderColor = 'var(--primary)';
+  }
+}
+
+function clearError(fieldId) {
+  const errorEl = document.getElementById(`error-${fieldId}`);
+  const inputEl = document.getElementById(fieldId);
+  if (errorEl) {
+    errorEl.classList.remove('show');
+  }
+  if (inputEl) {
+    inputEl.style.borderColor = '';
+  }
+}
+
+function submitDistForm() {
+  const nameInput = document.getElementById('sender-name');
+  const phoneInput = document.getElementById('sender-phone');
+  const insideInput = document.getElementById('orders-inside');
+  const outsideInput = document.getElementById('orders-outside');
+
+  const nameVal = nameInput.value.trim();
+  const phoneVal = phoneInput.value.trim();
+  const insideVal = insideInput.value.trim();
+  const outsideVal = outsideInput.value.trim();
+
+  let isValid = true;
+
+  // Validate Sender Name
+  if (!nameVal) {
+    showError('sender-name', 'برجاء إدخال اسم المرسِل');
+    isValid = false;
+  } else {
+    clearError('sender-name');
+  }
+
+  // Validate Egyptian Phone Number (11 digits, starts with 010, 011, 012, or 015)
+  const egPhoneRegex = /^01[0125]\d{8}$/;
+  if (!phoneVal) {
+    showError('sender-phone', 'برجاء إدخال رقم التليفون');
+    isValid = false;
+  } else if (!egPhoneRegex.test(phoneVal)) {
+    showError('sender-phone', 'رقم تليفون غير صحيح (يجب أن يبدأ بـ 010، 011، 012 أو 015 ويتكون من 11 رقم)');
+    isValid = false;
+  } else {
+    clearError('sender-phone');
+  }
+
+  // Validate inside orders count
+  const insideCount = parseInt(insideVal);
+  if (insideVal === '') {
+    showError('orders-inside', 'برجاء إدخال عدد الأوردرات داخل الزيات');
+    isValid = false;
+  } else if (isNaN(insideCount) || insideCount < 0) {
+    showError('orders-inside', 'يجب أن يكون الرقم 0 أو أكبر');
+    isValid = false;
+  } else {
+    clearError('orders-inside');
+  }
+
+  // Validate outside orders count
+  const outsideCount = parseInt(outsideVal);
+  if (outsideVal === '') {
+    showError('orders-outside', 'برجاء إدخال عدد الأوردرات خارج الزيات');
+    isValid = false;
+  } else if (isNaN(outsideCount) || outsideCount < 0) {
+    showError('orders-outside', 'يجب أن يكون الرقم 0 أو أكبر');
+    isValid = false;
+  } else {
+    clearError('orders-outside');
+  }
+
+  if (!isValid) {
+    showToast('برجاء تصحيح الأخطاء في الحقول المطلوبة ⚠️');
+    return;
+  }
+
+  const total = (insideCount * PRICE_INSIDE) + (outsideCount * PRICE_OUTSIDE);
+  
+  // Format Arabic Date & Time
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const formattedDateTime = `${dateStr} في تمام الساعة ${timeStr}`;
+
+  // Construct structured WhatsApp message
+  const msg = `🚚 *طلب توزيع شحنة — مستر ديليفري*
+
+👤 المرسِل: ${nameVal}
+📞 التليفون: ${phoneVal}
+
+📦 تفاصيل الشحنة:
+• أوردرات داخل الزيات: ${insideCount}
+• أوردرات خارج الزيات: ${outsideCount}
+
+💰 إجمالي الفاتورة: ${total} جنيه
+
+⏰ وقت الطلب: ${formattedDateTime}`;
+
+  const encodedMsg = encodeURIComponent(msg);
+  const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
+
+  // Redirect to WhatsApp
+  window.open(whatsappUrl, '_blank');
 }
