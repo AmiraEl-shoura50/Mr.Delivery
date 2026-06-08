@@ -1,171 +1,390 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مستر ديليفري</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
-<link rel =stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مستر ديليفري</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
+
 <body>
 
-<!-- Cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- Background -->
-<div class="bg-noise"></div>
-<div class="grid-lines"></div>
-<div class="particles" id="particles"></div>
+  <!-- Background -->
+  <div class="bg-noise"></div>
+  <div class="grid-lines"></div>
+  <div class="particles" id="particles"></div>
 
-<!-- Page Transition -->
-<div class="page-transition" id="transition"></div>
+  <!-- Page Transition -->
+  <div class="page-transition" id="transition"></div>
 
-<!-- Toast -->
-<div class="toast" id="toast">عرض بس — مفيش شراء أو دفع 🙌</div>
+  <!-- Toast -->
+  <div class="toast" id="toast">عرض بس — مفيش شراء أو دفع 🙌</div>
 
-<!-- Nav Dots -->
-<div class="nav-dots" id="navDots">
-  <div class="nav-dot active" title="الرئيسية"></div>
-  <div class="nav-dot" title="نوع الأوردر"></div>
-  <div class="nav-dot" title="العروض"></div>
-  <div class="nav-dot" title="تفاصيل العروض"></div>
-</div>
+  <!-- Nav Dots -->
+  <div class="nav-dots" id="navDots">
+    <div class="nav-dot active" title="الرئيسية"></div>
+    <div class="nav-dot" title="نوع الأوردر"></div>
+    <div class="nav-dot" title="طلب شراء"></div>
+    <div class="nav-dot" title="طلب توصيل"></div>
+    <div class="nav-dot" title="العروض"></div>
+    <div class="nav-dot" title="تفاصيل العروض"></div>
+    <div class="nav-dot" title="توزيع شحنة"></div>
+  </div>
 
-<!-- ══ HOME PAGE ══ -->
-<div class="page active" id="page-home">
-  <div class="home-inner" style="margin:auto">
-    <div class="logo-wrap">
-      <div class="logo-icon">🛵</div>
-      <div class="logo-text">مستر <span>ديليفري</span></div>
+  <!-- ══ HOME PAGE ══ -->
+  <div class="page active" id="page-home">
+    <div class="home-inner" style="margin:auto">
+      <div class="logo-wrap">
+        <div class="logo-icon"><img width="56" height="56" src="https://i.postimg.cc/9FFzWPW4/IMG-20260607-032220-451.png" alt=""></div>
+        <div class="logo-text">مستر <span>ديليفري</span></div>
+      </div>
+
+      <p class="hero-tagline">خدمة التوصيل الأسرع في المنطقة</p>
+
+      <h1 class="hero-title">
+        اطلب من أي مكان<br>
+        <span class="highlight">نوصّلهولك</span>
+      </h1>
+
+      <p class="hero-sub">
+        طلبات شراء من المحلات، توصيل بين الأماكن،<br>
+        وتوزيع الشحنات — كله في مكان واحد
+      </p>
+
+      <div class="home-buttons">
+        <button class="btn-main btn-primary" onclick="goTo('page-order-type')" id="btnOrder">
+          <div class="btn-content">
+            <span class="btn-label">🛒 أوردر طلبات</span>
+            <span class="btn-desc">اطلب من محلاتك المفضلة أو وصّل حاجة</span>
+          </div>
+          <div class="btn-arrow">←</div>
+        </button>
+
+        <button class="btn-main btn-secondary" onclick="onOffersAndProductsClick()" id="btnOffers">
+          <div class="btn-content">
+            <span class="btn-label">🔥 عروض ومنتجات</span>
+            <span class="btn-desc">شوف أحدث العروض والخصومات المتاحة</span>
+          </div>
+          <div class="btn-arrow">←</div>
+        </button>
+      </div>
     </div>
+  </div>
 
-    <p class="hero-tagline">خدمة التوصيل الأسرع في المنطقة</p>
+  <!-- ══ ORDER TYPE PAGE ══ -->
+  <div class="page" id="page-order-type">
+    <div style="max-width:700px;width:100%;margin:auto;padding:1rem">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
 
-    <h1 class="hero-title">
-      اطلب من أي مكان<br>
-      <span class="highlight">نوصّلهولك</span>
-    </h1>
+      <div class="page-header">
+        <h2>إيه اللي عايزه?</h2>
+        <p>اختار نوع الطلب وهنكمل معاك</p>
+      </div>
 
-    <p class="hero-sub">
-      طلبات شراء من المحلات، توصيل بين الأماكن،<br>
-      وتوزيع الشحنات — كله في مكان واحد
-    </p>
-
-    <div class="home-buttons">
-      <button class="btn-main btn-primary" onclick="goTo('page-order-type')" id="btnOrder">
-        <div class="btn-content">
-          <span class="btn-label">🛒 أوردر طلبات</span>
-          <span class="btn-desc">اطلب من محلاتك المفضلة أو وصّل حاجة</span>
+      <div class="order-cards">
+        <div class="order-card" id="card-buy" onclick="goTo('page-buy')">
+          <div class="card-icon-wrap">🛍️</div>
+          <div class="card-title">طلب شراء</div>
+          <div class="card-desc">اشتري من محلاتك ومطاعمك المفضلة ونوصّلك</div>
+          <div class="card-tag">لحد ٣ محلات</div>
         </div>
-        <div class="btn-arrow">←</div>
-      </button>
 
-      <button class="btn-main btn-secondary" onclick="goTo('page-offers')" id="btnOffers">
-        <div class="btn-content">
-          <span class="btn-label">🔥 عروض ومنتجات</span>
-          <span class="btn-desc">شوف أحدث العروض والخصومات المتاحة</span>
+        <div class="order-card" id="card-delivery" onclick="goTo('page-delivery')">
+          <div class="card-icon-wrap">📦</div>
+          <div class="card-title">طلب توصيل</div>
+          <div class="card-desc">عندك حاجة تتبعتها لحد تاني؟ إحنا بنوصّلها</div>
+          <div class="card-tag">من لحد</div>
         </div>
-        <div class="btn-arrow">←</div>
-      </button>
-    </div>
-  </div>
-</div>
 
-<!-- ══ ORDER TYPE PAGE ══ -->
-<div class="page" id="page-order-type">
-  <div style="max-width:700px;width:100%;margin:auto;padding:1rem">
-    <button class="back-btn" onclick="goBack()">→ رجوع</button>
-
-    <div class="page-header">
-      <h2>إيه اللي عايزه؟</h2>
-      <p>اختار نوع الطلب وهنكمل معاك</p>
-    </div>
-
-    <div class="order-cards">
-      <div class="order-card" id="card-buy" ">
-        <div class="card-icon-wrap">🛍️</div>
-        <div class="card-title">طلب شراء</div>
-        <div class="card-desc">اشتري من محلاتك ومطاعمك المفضلة ونوصّلك</div>
-        <div class="card-tag">لحد ٣ محلات</div>
-      </div>
-
-      <div class="order-card" id="card-delivery" ">
-        <div class="card-icon-wrap">📦</div>
-        <div class="card-title">طلب توصيل</div>
-        <div class="card-desc">عندك حاجة تتبعتها لحد تاني؟ إحنا بنوصّلها</div>
-        <div class="card-tag">من لحد</div>
-      </div>
-
-      <div class="order-card" id="card-dist" ">
-        <div class="card-icon-wrap">🚚</div>
-        <div class="card-title">توزيع شحنة</div>
-        <div class="card-desc">شحنة كبيرة تتوزع جوه وبره الزيات؟ إحنا هنا</div>
-        <div class="card-tag">داخل وخارج الزيات</div>
+        <div class="order-card" id="card-dist" onclick="goTo('page-dist')">
+          <div class="card-icon-wrap">🚚</div>
+          <div class="card-title">توزيع شحنة</div>
+          <div class="card-desc">شحنة كبيرة تتوزع جوه وبره الزيات؟ إحنا هنا</div>
+          <div class="card-tag">داخل وخارج الزيات</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ══ OFFERS PAGE ══ -->
-<div class="page" id="page-offers">
-  <div style="max-width:900px;width:100%;margin:auto">
-    <button class="back-btn" onclick="goBack()">→ رجوع</button>
+  <!-- ══ PURCHASE ORDER PAGE ══ -->
+  <div class="page" id="page-buy">
+    <div style="max-width: 700px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
 
-    <div class="offers-header">
-      <h2>🔥 العروض والمنتجات</h2>
-      <p>اختار التصنيف اللي يهمك وشوف أحدث العروض</p>
-    </div>
-
-    <div class="categories-grid">
-      <div class="cat-card" onclick="openCategory('restaurants')">
-        <span class="cat-emoji">🍔</span>
-        <div class="cat-name">مطاعم</div>
-        <div class="cat-count">١٢ عرض متاح</div>
+      <div class="page-header">
+        <h2>🛍️ طلب شراء جديد</h2>
+        <p>اختار المحلات والمنتجات اللي تبيها ونحنا نوصّلك</p>
       </div>
-      <div class="cat-card" onclick="openCategory('grocery')">
-        <span class="cat-emoji">🛒</span>
-        <div class="cat-name">بقالة</div>
-        <div class="cat-count">٨ عروض متاحة</div>
-      </div>
-      <div class="cat-card" onclick="openCategory('dairy')">
-        <span class="cat-emoji">🥛</span>
-        <div class="cat-name">ألبان</div>
-        <div class="cat-count">٦ عروض متاحة</div>
-      </div>
-    </div>
 
-    <div class="view-only-banner">
-      👁️ صفحة العروض للاطلاع بس — مش هتقدر تشتري أو تدفع من هنا
+      <form id="buy-form" onsubmit="event.preventDefault(); submitBuyForm();" novalidate>
+        <!-- Section 1: Personal Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-user"></i> بيانات العميل</h3>
+          <div class="input-group">
+            <label for="buy-name">اسمك <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="buy-name" placeholder="أدخل اسمك بالكامل" required>
+              <i class="fa-solid fa-user input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-buy-name">برجاء إدخال اسمك</span>
+          </div>
+
+          <div class="input-group">
+            <label for="buy-phone">رقم تليفونك <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="tel" id="buy-phone" placeholder="مثال: 01012345678" required>
+              <i class="fa-solid fa-phone input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-buy-phone">برجاء إدخال رقم تليفون صحيح</span>
+          </div>
+
+          <div class="input-group">
+            <label for="buy-address">عنوان التوصيل <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="buy-address" placeholder="مثال: شارع النيل - العجوزة - الجيزة" required>
+              <i class="fa-solid fa-map-pin input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-buy-address">برجاء إدخال عنوان واضح (5-80 حرف)</span>
+          </div>
+        </div>
+
+        <!-- Section 2: Stores -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-store"></i> اختار المحلات</h3>
+          <div id="buy-stores-container"></div>
+          <button type="button" id="btn-add-store" class="btn-main btn-secondary" onclick="addNewStoreField()" style="width:100%;margin-top:1rem;justify-content:center">
+            <div class="btn-content">
+              <span class="btn-label">＋ محل جديد</span>
+              <span class="btn-desc">أضف محل آخر (بحد أقصى 3)</span>
+            </div>
+          </button>
+          <div id="buy-store-limit-note" style="display:none;margin-top:1rem;padding:1rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;font-size:0.8rem;color:#EF4444;text-align:center">
+            🚨 وصلت للحد الأقصى من المحلات (٣). لو عايز أكتر اتفضل اطلب مرة تانية.
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-main btn-submit-whatsapp" id="btn-buy-submit" style="width:100%">
+          <div class="btn-content">
+            <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت الطلب</span>
+            <span class="btn-desc">مراجعة البيانات وإرسال فوراً</span>
+          </div>
+          <div class="btn-arrow">←</div>
+        </button>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- ══ OFFERS DETAIL PAGE ══ -->
-<div class="page" id="page-offers-detail">
-  <div style="max-width:900px;width:100%;margin:auto">
-    <button class="back-btn" onclick="goTo('page-offers')">→ رجوع للتصنيفات</button>
+  <!-- ══ DELIVERY ORDER PAGE ══ -->
+  <div class="page" id="page-delivery">
+    <div style="max-width: 700px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
 
-    <div class="detail-header" id="detailHeader">
-      <span class="detail-emoji" id="detailEmoji">🍔</span>
-      <div>
-        <h2 id="detailTitle">مطاعم</h2>
-        <p id="detailSub">عروض المطاعم المتاحة</p>
+      <div class="page-header">
+        <h2>📦 طلب توصيل جديد</h2>
+        <p>وصّل أي حاجة من مكان لآخر — نحن بنتكفل بالباقي</p>
       </div>
-    </div>
 
-    <div class="offers-grid" id="offersGrid"></div>
+      <form id="delivery-form" onsubmit="event.preventDefault(); submitDeliveryForm();" novalidate>
+        <!-- Section 1: Sender Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-user-circle"></i> بيانات المرسِل</h3>
+          <div class="input-group">
+            <label for="delivery-sender-name">اسم المرسِل <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="delivery-sender-name" placeholder="أدخل الاسم" required>
+              <i class="fa-solid fa-user input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-sender-name">برجاء إدخال اسم المرسِل</span>
+          </div>
 
-    <div class="view-only-banner" style="margin-top:1.5rem">
-      👁️ هذه العروض للعرض فقط — التواصل عبر الواتساب للطلب
+          <div class="input-group">
+            <label for="delivery-sender-phone">تليفون المرسِل <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="tel" id="delivery-sender-phone" placeholder="مثال: 01012345678" required>
+              <i class="fa-solid fa-phone input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-sender-phone">برجاء إدخال رقم صحيح</span>
+          </div>
+
+          <div class="input-group">
+            <label for="delivery-pickup-address">عنوان الاستلام (من هنا) <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="delivery-pickup-address" placeholder="مثال: شارع النيل - القاهرة" required>
+              <i class="fa-solid fa-map-pin input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-pickup-address">برجاء إدخال عنوان واضح</span>
+          </div>
+        </div>
+
+        <!-- Section 2: Receiver Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-person-hiking"></i> بيانات المستلم</h3>
+          <div class="input-group">
+            <label for="delivery-receiver-name">اسم المستلم <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="delivery-receiver-name" placeholder="أدخل الاسم" required>
+              <i class="fa-solid fa-user input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-receiver-name">برجاء إدخال اسم المستلم</span>
+          </div>
+
+          <div class="input-group">
+            <label for="delivery-receiver-phone">تليفون المستلم <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="tel" id="delivery-receiver-phone" placeholder="مثال: 01012345678" required>
+              <i class="fa-solid fa-phone input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-receiver-phone">برجاء إدخال رقم صحيح</span>
+          </div>
+
+          <div class="input-group">
+            <label for="delivery-dropoff-address">عنوان التوصيل (لفين) <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="delivery-dropoff-address" placeholder="مثال: مدينة نصر - القاهرة" required>
+              <i class="fa-solid fa-map-pin input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-delivery-dropoff-address">برجاء إدخال عنوان واضح</span>
+          </div>
+        </div>
+
+        <!-- Section 3: Package Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-box"></i> تفاصيل الشحنة</h3>
+          <div class="input-group">
+            <label for="delivery-package">وصف الشحنة <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <textarea id="delivery-package" placeholder="أكتب وصف مختصر للحاجة اللي بتتوصيل..." style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:80px;resize:vertical" required></textarea>
+            </div>
+            <span class="error-msg" id="error-delivery-package">برجاء وصف الشحنة</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-main btn-submit-whatsapp" style="width:100%">
+          <div class="btn-content">
+            <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت الطلب</span>
+            <span class="btn-desc">مراجعة البيانات وإرسال فوراً</span>
+          </div>
+          <div class="btn-arrow">←</div>
+        </button>
+      </form>
     </div>
   </div>
-</div>
 
-<script src="../js/script.js" defer></script>
+  <!-- ══ OFFERS PAGE ══ -->
+  <div class="page" id="page-offers">
+    <div style="max-width:900px;width:100%;margin:auto">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
+
+      <div class="offers-header">
+        <h2>🔥 العروض والمنتجات</h2>
+        <p>اختار التصنيف اللي يهمك وشوف أحدث العروض</p>
+      </div>
+
+      <div class="categories-grid" id="categoriesGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══ OFFERS DETAIL PAGE ══ -->
+  <div class="page" id="page-offers-detail">
+    <div style="max-width:900px;width:100%;margin:auto">
+      <button class="back-btn" onclick="goTo('page-offers')">→ رجوع للتصنيفات</button>
+
+      <div class="detail-header" id="detailHeader">
+        <span class="detail-emoji" id="detailEmoji">🍔</span>
+        <div>
+          <h2 id="detailTitle">مطاعم</h2>
+          <p id="detailSub">عروض المطاعم المتاحة</p>
+        </div>
+      </div>
+
+      <div class="offers-grid" id="offersGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══ SHIPMENT DISTRIBUTION PAGE ══ -->
+  <div class="page" id="page-dist">
+    <div style="max-width: 600px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
+
+      <div class="page-header">
+        <h2>🚚 توزيع شحنة جديدة</h2>
+        <p>املا بيانات الشحنة وسيتم إرسال الطلب فوراً</p>
+      </div>
+
+      <form id="dist-form" onsubmit="event.preventDefault(); submitDistForm();" novalidate>
+        <!-- Section 1: Sender Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-user"></i> بيانات المرسِل</h3>
+          <div class="input-group">
+            <label for="sender-name">اسم المرسِل <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="sender-name" placeholder="أدخل اسمك بالكامل" required>
+              <i class="fa-solid fa-user input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-sender-name">برجاء إدخال اسم المرسِل</span>
+          </div>
+
+          <div class="input-group">
+            <label for="sender-phone">رقم تليفون المرسِل <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="tel" id="sender-phone" placeholder="مثال: 01012345678" required>
+              <i class="fa-solid fa-phone input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-sender-phone">برجاء إدخال رقم تليفون مصري صحيح</span>
+          </div>
+        </div>
+
+        <!-- Section 2: Shipment Details -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="fa-solid fa-box"></i> تفاصيل الشحنة</h3>
+          <div class="inputs-row">
+            <div class="input-group">
+              <label for="orders-inside">عدد الأوردرات داخل الزيات <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input type="number" id="orders-inside" min="0" value="0" required>
+                <i class="fa-solid fa-city input-icon"></i>
+              </div>
+              <span class="error-msg" id="error-orders-inside">العدد يجب أن يكون 0 أو أكثر</span>
+            </div>
+
+            <div class="input-group">
+              <label for="orders-outside">عدد الأوردرات خارج الزيات <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input type="number" id="orders-outside" min="0" value="0" required>
+                <i class="fa-solid fa-truck-ramp-box input-icon"></i>
+              </div>
+              <span class="error-msg" id="error-orders-outside">العدد يجب أن يكون 0 أو أكثر</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-main btn-submit-whatsapp" id="btn-submit">
+          <div class="btn-content">
+            <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت على الواتساب</span>
+            <span class="btn-desc">مراجعة البيانات وإرسال الطلب فوراً</span>
+          </div>
+          <div class="btn-arrow">←</div>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/script.js" defer></script>
 </body>
+
 </html>
