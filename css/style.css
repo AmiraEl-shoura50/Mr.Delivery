@@ -782,3 +782,43 @@
     .inputs-row { grid-template-columns: 1fr; gap: 0.8rem; }
     .form-section { padding: 1.5rem 1.2rem; }
   }
+/* تنسيق إضافي لربط حقل البند بزر الزائد بشكل أنيق */
+    /* تنسيقات مخصصة لربط حقل البند الأنيق بزر الزائد */
+    .item-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .item-row .input-wrapper {
+      flex: 1;
+    }
+    .btn-add-item {
+      background: var(--primary, #ff9800);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: background 0.2s;
+    }
+    .btn-add-item:hover {
+      background: var(--primary-hover, #e65100);
+    }
+    .btn-remove-item {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }

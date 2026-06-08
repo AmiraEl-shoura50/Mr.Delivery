@@ -11,28 +11,23 @@
     href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
-  <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
 </head>
 
 <body>
 
-  <!-- Cursor -->
   <div class="cursor" id="cursor"></div>
   <div class="cursor-ring" id="cursorRing"></div>
 
-  <!-- Background -->
   <div class="bg-noise"></div>
   <div class="grid-lines"></div>
   <div class="particles" id="particles"></div>
 
-  <!-- Page Transition -->
   <div class="page-transition" id="transition"></div>
 
-  <!-- Toast -->
   <div class="toast" id="toast">عرض بس — مفيش شراء أو دفع 🙌</div>
 
-  <!-- Nav Dots -->
   <div class="nav-dots" id="navDots">
     <div class="nav-dot active" title="الرئيسية"></div>
     <div class="nav-dot" title="نوع الأوردر"></div>
@@ -43,7 +38,6 @@
     <div class="nav-dot" title="توزيع شحنة"></div>
   </div>
 
-  <!-- ══ HOME PAGE ══ -->
   <div class="page active" id="page-home">
     <div class="home-inner" style="margin:auto">
       <div class="logo-wrap">
@@ -83,7 +77,6 @@
     </div>
   </div>
 
-  <!-- ══ ORDER TYPE PAGE ══ -->
   <div class="page" id="page-order-type">
     <div style="max-width:700px;width:100%;margin:auto;padding:1rem">
       <button class="back-btn" onclick="goBack()">→ رجوع</button>
@@ -118,7 +111,6 @@
     </div>
   </div>
 
-  <!-- ══ PURCHASE ORDER PAGE ══ -->
   <div class="page" id="page-buy">
     <div style="max-width: 700px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
       <button class="back-btn" onclick="goBack()">→ رجوع</button>
@@ -129,7 +121,6 @@
       </div>
 
       <form id="buy-form" onsubmit="event.preventDefault(); submitBuyForm();" novalidate>
-        <!-- Section 1: Personal Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-user"></i> بيانات العميل</h3>
           <div class="input-group">
@@ -153,17 +144,43 @@
           <div class="input-group">
             <label for="buy-address">عنوان التوصيل <span class="required">*</span></label>
             <div class="input-wrapper">
-              <input type="text" id="buy-address" placeholder="مثال: شارع النيل - العجوزة - الجيزة" required>
+              <input type="text" id="buy-address" placeholder="مثال: شارع النيل - العجوزة" required>
               <i class="fa-solid fa-map-pin input-icon"></i>
             </div>
             <span class="error-msg" id="error-buy-address">برجاء إدخال عنوان واضح (5-80 حرف)</span>
           </div>
         </div>
 
-        <!-- Section 2: Stores -->
         <div class="form-section">
-          <h3 class="section-title"><i class="fa-solid fa-store"></i> اختار المحلات</h3>
-          <div id="buy-stores-container"></div>
+          <h3 class="section-title"><i class="fa-solid fa-store"></i> الطلبات والمحلات</h3>
+          
+          <div id="buy-stores-container">
+            <div class="store-block" id="store-block-1" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); border-radius: 14px;">
+              <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 0.95rem;"><i class="fa-solid fa-shop"></i> المحل رقم 1</h4>
+              
+              <div class="input-group">
+                <label>اسم المحل / المطعم <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input type="text" class="store-name-input" placeholder="مثال: مطعم أبو عمار، أو سوبرماركت التقوى" required>
+                  <i class="fa-solid fa-store input-icon"></i>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label>بند الطلب <span class="required">*</span></label>
+                <div class="items-container" id="items-container-1">
+                  <div class="item-row">
+                    <div class="input-wrapper">
+                      <input type="text" class="store-item-input" maxlength="70" placeholder="مثال: 2 ساندوتش شاورما لارج" required>
+                      <i class="fa-solid fa-basket-shopping input-icon"></i>
+                    </div>
+                    <button type="button" class="btn-add-item" onclick="addItemField(1)">＋</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <button type="button" id="btn-add-store" class="btn-main btn-secondary" onclick="addNewStoreField()" style="width:100%;margin-top:1rem;justify-content:center">
             <div class="btn-content">
               <span class="btn-label">＋ محل جديد</span>
@@ -175,7 +192,6 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn-main btn-submit-whatsapp" id="btn-buy-submit" style="width:100%">
           <div class="btn-content">
             <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت الطلب</span>
@@ -187,7 +203,6 @@
     </div>
   </div>
 
-  <!-- ══ DELIVERY ORDER PAGE ══ -->
   <div class="page" id="page-delivery">
     <div style="max-width: 700px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
       <button class="back-btn" onclick="goBack()">→ رجوع</button>
@@ -198,7 +213,6 @@
       </div>
 
       <form id="delivery-form" onsubmit="event.preventDefault(); submitDeliveryForm();" novalidate>
-        <!-- Section 1: Sender Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-user-circle"></i> بيانات المرسِل</h3>
           <div class="input-group">
@@ -229,7 +243,6 @@
           </div>
         </div>
 
-        <!-- Section 2: Receiver Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-person-hiking"></i> بيانات المستلم</h3>
           <div class="input-group">
@@ -260,7 +273,6 @@
           </div>
         </div>
 
-        <!-- Section 3: Package Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-box"></i> تفاصيل الشحنة</h3>
           <div class="input-group">
@@ -272,7 +284,6 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn-main btn-submit-whatsapp" style="width:100%">
           <div class="btn-content">
             <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت الطلب</span>
@@ -284,7 +295,6 @@
     </div>
   </div>
 
-  <!-- ══ OFFERS PAGE ══ -->
   <div class="page" id="page-offers">
     <div style="max-width:900px;width:100%;margin:auto">
       <button class="back-btn" onclick="goBack()">→ رجوع</button>
@@ -298,7 +308,6 @@
     </div>
   </div>
 
-  <!-- ══ OFFERS DETAIL PAGE ══ -->
   <div class="page" id="page-offers-detail">
     <div style="max-width:900px;width:100%;margin:auto">
       <button class="back-btn" onclick="goTo('page-offers')">→ رجوع للتصنيفات</button>
@@ -315,7 +324,6 @@
     </div>
   </div>
 
-  <!-- ══ SHIPMENT DISTRIBUTION PAGE ══ -->
   <div class="page" id="page-dist">
     <div style="max-width: 600px; width: 100%; margin: auto; padding: 1.5rem 1rem;">
       <button class="back-btn" onclick="goBack()">→ رجوع</button>
@@ -326,7 +334,6 @@
       </div>
 
       <form id="dist-form" onsubmit="event.preventDefault(); submitDistForm();" novalidate>
-        <!-- Section 1: Sender Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-user"></i> بيانات المرسِل</h3>
           <div class="input-group">
@@ -346,9 +353,17 @@
             </div>
             <span class="error-msg" id="error-sender-phone">برجاء إدخال رقم تليفون مصري صحيح</span>
           </div>
+
+          <div class="input-group">
+            <label for="sender-address">عنوان المرسِل (منين الاستلام) <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="text" id="sender-address" placeholder="مثال: شارع الثورة - بجوار مسجد التقوى" required>
+              <i class="fa-solid fa-map-pin input-icon"></i>
+            </div>
+            <span class="error-msg" id="error-sender-address">برجاء إدخال عنوان الاستلام</span>
+          </div>
         </div>
 
-        <!-- Section 2: Shipment Details -->
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-box"></i> تفاصيل الشحنة</h3>
           <div class="inputs-row">
@@ -370,9 +385,17 @@
               <span class="error-msg" id="error-orders-outside">العدد يجب أن يكون 0 أو أكثر</span>
             </div>
           </div>
+
+          <div class="input-group" style="margin-top: 1rem;">
+            <label for="dist-details">تفاصيل الشحنة <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <textarea id="dist-details" placeholder="اكتب هنا تفاصيل الشحنة أو أي ملاحظات إضافية للمندوب..." style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:90px;resize:vertical" required></textarea>
+            </div>
+            <span class="error-msg" id="error-dist-details">برجاء كتابة تفاصيل الشحنة</span>
+          </div>
+
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn-main btn-submit-whatsapp" id="btn-submit">
           <div class="btn-content">
             <span class="btn-label"><i class="fa-brands fa-whatsapp"></i> ابعت على الواتساب</span>

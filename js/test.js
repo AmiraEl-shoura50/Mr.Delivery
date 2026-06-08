@@ -1,10 +1,10 @@
 // ── Global Config & Dynamic Constants ──
-const WHATSAPP_PHONE = '201009764342'; // 📱 رقم الجوال المتغير الخاص بالدعم / الاستلام
+const WHATSAPP_PHONE = '201000000000'; // 📱 رقم الجوال المتغير الخاص بالدعم / الاستلام
 
 // ── State & Global Config ──
 let currentPage = 'page-home';
 let pageHistory = [];
-let buyStores = []; // تم الاحتفاظ بالتعريف هنا وحذفه من الأسفل لمنع تكرار التعريف الإجباري
+let buyStores = []; // Store list for purchase order
 
 // Firebase & Offers State
 let firebaseCategories = [];
@@ -66,7 +66,9 @@ function initCursorHoverEvents() {
 }
 
 // ── Page Navigation ──
+// ── Updated Smart Page Navigation ──
 function goTo(pageId) {
+  // منع إضافة نفس الصفحة الحالية في التاريخ لتجنب مشاكل الرجوع المتكرر
   if (pageHistory.length > 0 && pageHistory[pageHistory.length - 1] === pageId) {
     pageHistory.pop();
   }
@@ -81,10 +83,11 @@ function goTo(pageId) {
     const target = document.getElementById(pageId);
     if (target) target.classList.add('active');
     
+    // إدارة ذكية للتاريخ بناءً على الصفحة المستهدفة
     if (pageId === 'page-offers') {
-      pageHistory = ['page-home'];
+      pageHistory = ['page-home']; // إذا رايح للأقسام، المرجع الوحيد هو الرئيسية
     } else if (pageId === 'page-offers-detail') {
-      pageHistory = ['page-home', 'page-offers'];
+      pageHistory = ['page-home', 'page-offers']; // إذا رايح لتفاصيل العروض، يرجع للأقسام
     } else {
       pageHistory.push(currentPage);
     }
@@ -98,6 +101,7 @@ function goTo(pageId) {
 }
 
 function goBack() {
+  // حل المشكلة الرئيسية: إذا أنا في صفحة الأقسام واضغط رجوع، اذهب فوراً للصفحة الأولى
   if (currentPage === 'page-offers') {
     pageHistory = [];
     const trans = document.getElementById('transition');
@@ -115,6 +119,7 @@ function goBack() {
     return;
   }
 
+  // التنقل الطبيعي لباقي الصفحات
   if (pageHistory.length > 0) {
     const prev = pageHistory.pop();
     const trans = document.getElementById('transition');
@@ -131,6 +136,20 @@ function goBack() {
     }, 400);
   }
 }
+
+// ── Trigger Load & Navigation From Main Home Button ──
+window.onOffersAndProductsClick = function() {
+  // تنظيف كامل للتاريخ لضمان البداية من الصفر
+  pageHistory = [];
+  goTo('page-offers');
+  
+  if (typeof window.loadFirebaseData === 'function') {
+    window.loadFirebaseData();
+  } else {
+    renderClientCategories();
+  }
+};
+
 
 function updateNavDots() {
   const pages = ['page-home', 'page-order-type', 'page-buy', 'page-delivery', 'page-offers', 'page-offers-detail', 'page-dist'];
@@ -190,6 +209,7 @@ function animateOfferCards() {
 
 // ── Trigger Load & Navigation From Main Home Button ──
 window.onOffersAndProductsClick = function() {
+  // تفريغ الهستوري عند الدخول المباشر لضمان أن الرجوع يذهب للصفحة الرئيسية دائماً
   pageHistory = ['page-home'];
   goTo('page-offers');
   
@@ -218,6 +238,7 @@ window.renderClientCategories = function() {
     return `
       <div class="cat-card animate-card" onclick="openCategory('${cat.id}')" style="animation-delay: ${i * 0.1}s; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
         ${cat.imgUrl ? `
+          <!-- تثبيت المقاسات هنا بدقة واحترافية لمنع تمدد الصورة وتشويهها -->
           <div class="cat-img-wrap" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 0.8rem; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid var(--card-border);">
             <img src="${cat.imgUrl}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s;" class="cat-img-el">
           </div>
@@ -262,6 +283,8 @@ window.openCategory = function(catId) {
         <div class="empty-text" style="color: var(--text-muted);">لا توجد عروض نشطة في هذا القسم حالياً</div>
       </div>
     `;
+    
+    // الانتقال بدون التسبب في تراكم عشوائي بالتاريخ
     pageHistory = ['page-home', 'page-offers']; 
     goTo('page-offers-detail');
     return;
@@ -296,6 +319,7 @@ window.openCategory = function(catId) {
     grid.appendChild(card);
   });
 
+  // ضبط دقيق للتاريخ لكي يعود خطوة واحدة صحيحة دوماً
   pageHistory = ['page-home', 'page-offers'];
   goTo('page-offers-detail');
 };
@@ -383,6 +407,7 @@ function showError(fieldId, msg) {
   }
 }
 
+// ── Clear Field Errors ──
 function clearError(fieldId) {
   const errorEl = document.getElementById(`error-${fieldId}`);
   const inputEl = document.getElementById(fieldId);
@@ -435,7 +460,7 @@ function addNewStoreField() {
     return;
   }
   const storeId = 'store-' + Date.now() + Math.random().toString(36).substr(2, 5);
-  buyStores.push({ id: storeId, name: '', items: [''] });
+  buyStores.push({ id: storeId, name: '', items: '' });
   renderBuyStores();
   initInputsHoverAdjustments();
 }
@@ -449,27 +474,6 @@ function removeStoreField(storeId) {
   renderBuyStores();
 }
 
-window.addItemField = function(storeId) {
-  const store = buyStores.find(s => s.id === storeId);
-  if (store) {
-    store.items.push('');
-    renderBuyStores();
-    initInputsHoverAdjustments();
-  }
-};
-
-window.removeItemField = function(storeId, itemIndex) {
-  const store = buyStores.find(s => s.id === storeId);
-  if (store) {
-    if (store.items.length <= 1) {
-      showToast('يجب كتابة بند واحد على الأقل للمحل 🛒');
-      return;
-    }
-    store.items.splice(itemIndex, 1);
-    renderBuyStores();
-  }
-};
-
 window.updateStoreName = function(id, val) {
   const store = buyStores.find(s => s.id === id);
   if (store) {
@@ -478,11 +482,11 @@ window.updateStoreName = function(id, val) {
   }
 };
 
-window.updateStoreItemValue = function(storeId, itemIndex, val) {
-  const store = buyStores.find(s => s.id === storeId);
+window.updateStoreItems = function(id, val) {
+  const store = buyStores.find(s => s.id === id);
   if (store) {
-    store.items[itemIndex] = val;
-    clearError(`store-items-${storeId}`);
+    store.items = val;
+    clearError(`store-items-${id}`);
   }
 };
 
@@ -491,21 +495,6 @@ function renderBuyStores() {
   if (!container) return;
 
   container.innerHTML = buyStores.map((store, index) => {
-    const itemsHtml = store.items.map((itemValue, itemIdx) => {
-      return `
-        <div class="item-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-          <div class="input-wrapper" style="flex: 1;">
-            <input type="text" class="store-item-input" maxlength="70" value="${itemValue}" placeholder="مثال: ٢ ساندوتش شاورما لارج" oninput="updateStoreItemValue('${store.id}', ${itemIdx}, this.value)" required>
-            <i class="fa-solid fa-basket-shopping input-icon"></i>
-          </div>
-          ${itemIdx === 0 
-            ? `<button type="button" class="btn-add-item" onclick="addItemField('${store.id}')" style="background: var(--primary, #ff9800); color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;">＋</button>`
-            : `<button type="button" class="btn-remove-item" onclick="removeItemField('${store.id}', ${itemIdx})" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">×</button>`
-          }
-        </div>
-      `;
-    }).join('');
-
     return `
       <div class="store-card-item" id="card-${store.id}" style="border: 1px solid var(--card-border); padding: 1.5rem; border-radius: 18px; background: rgba(255,255,255,0.01); margin-bottom: 1.2rem; position: relative; backdrop-filter: blur(10px); opacity: 0; transform: translateY(10px); animation: err-fade-in 0.35s ease forwards;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">
@@ -523,11 +512,11 @@ function renderBuyStores() {
         </div>
 
         <div class="input-group" style="margin-bottom: 0;">
-          <label id="store-items-label-${store.id}">بند الطلب <span class="required">*</span></label>
-          <div class="items-container" id="items-container-${store.id}">
-            ${itemsHtml}
+          <label for="store-items-${store.id}">قائمة الطلبات بالتفصيل <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <textarea id="store-items-${store.id}" class="form-textarea" placeholder="مثال:\n- ٢ ساندوتش شاورما لارج\n- ١ كانز بيبسي" oninput="updateStoreItems('${store.id}', this.value)" style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 14px; padding: 1rem; color: var(--text); font-family: 'Cairo', sans-serif; font-size: 0.95rem; width: 100%; min-height: 80px; resize: vertical;" required>${store.items}</textarea>
           </div>
-          <span class="error-msg" id="error-store-items-${store.id}">برجاء كتابة البنود المطلوبة بحد أقصى 70 حرفاً لكل بند</span>
+          <span class="error-msg" id="error-store-items-${store.id}">برجاء كتابة طلباتك من هذا المحل</span>
         </div>
       </div>
     `;
@@ -567,14 +556,7 @@ async function submitBuyForm() {
 
   buyStores.forEach(s => {
     if (!s.name.trim()) { showError(`store-name-${s.id}`, 'برجاء إدخال اسم المحل'); isValid = false; } else { clearError(`store-name-${s.id}`); }
-    
-    const hasEmptyItems = s.items.some(item => !item.trim());
-    if (hasEmptyItems || s.items.length === 0) { 
-      showError(`store-items-${s.id}`, 'برجاء ملء جميع حقول البنود المطلوبة من هذا المحل'); 
-      isValid = false; 
-    } else { 
-      clearError(`store-items-${s.id}`); 
-    }
+    if (!s.items.trim()) { showError(`store-items-${s.id}`, 'برجاء كتابة طلباتك بالتفصيل من هذا المحل'); isValid = false; } else { clearError(`store-items-${s.id}`); }
   });
 
   if (!isValid) {
@@ -592,17 +574,14 @@ async function submitBuyForm() {
     clientName: nameVal,
     clientPhone: phoneVal,
     clientAddress: addressVal,
-    stores: buyStores.map(s => ({ name: s.name.trim(), items: s.items.map(item => item.trim()) })),
+    stores: buyStores.map(s => ({ name: s.name.trim(), items: s.items.trim() })),
     status: 'pending'
   };
   await logOrderToFirebase(orderData);
 
   let storesMsg = '';
   buyStores.forEach((s, idx) => {
-    storesMsg += `\n🏪 *المحل رقم (${idx + 1}):* ${s.name.trim()}\n🛒 *البنود:*\n`;
-    s.items.forEach(item => {
-        storesMsg += `  ▪️ ${item.trim()}\n`;
-    });
+    storesMsg += `\n🏪 *المحل رقم (${idx + 1}):* ${s.name.trim()}\n🛒 *الطلبات:*\n${s.items.trim()}\n`;
   });
 
   const msg = `🛍️ *طلب شراء جديد — مستر ديليفري*
@@ -723,21 +702,17 @@ ${pkgVal}
   setTimeout(() => { window.open(whatsappUrl, '_blank'); }, 1000);
 }
 
-// ══════════════════════════════════════════════════════════════
-// 🚚 SHIPMENT DISTRIBUTION LOGIC (page-dist)
-// ══════════════════════════════════════════════════════════════
+// ── Shipment Distribution Logic (page-dist) ──
 function initDistForm() {
   const insideInput = document.getElementById('orders-inside');
   const outsideInput = document.getElementById('orders-outside');
   const senderName = document.getElementById('sender-name');
   const senderPhone = document.getElementById('sender-phone');
-  const senderAddress = document.getElementById('sender-address'); 
 
   if (!insideInput || !outsideInput) return;
 
   senderName.addEventListener('input', () => clearError('sender-name'));
   senderPhone.addEventListener('input', () => clearError('sender-phone'));
-  if (senderAddress) senderAddress.addEventListener('input', () => clearError('sender-address')); 
   insideInput.addEventListener('input', () => clearError('orders-inside'));
   outsideInput.addEventListener('input', () => clearError('orders-outside'));
 }
@@ -745,30 +720,19 @@ function initDistForm() {
 async function submitDistForm() {
   const nameInput = document.getElementById('sender-name');
   const phoneInput = document.getElementById('sender-phone');
-  const addressInput = document.getElementById('sender-address'); 
   const insideInput = document.getElementById('orders-inside');
   const outsideInput = document.getElementById('orders-outside');
-  const distDetailsInput = document.getElementById('dist-details'); 
 
   const nameVal = nameInput.value.trim();
   const phoneVal = phoneInput.value.trim();
-  const addressVal = addressInput ? addressInput.value.trim() : ''; 
   const insideVal = insideInput.value.trim();
   const outsideVal = outsideInput.value.trim();
-  const distDetailsVal = distDetailsInput ? distDetailsInput.value.trim() : '';
 
   let isValid = true;
 
   if (!nameVal) { showError('sender-name', 'برجاء إدخال اسم المرسِل'); isValid = false; } else { clearError('sender-name'); }
   const phoneCheck = validateEgyptianPhone(phoneVal);
   if (!phoneCheck.valid) { showError('sender-phone', phoneCheck.msg); isValid = false; } else { clearError('sender-phone'); }
-
-  if (!addressVal) { 
-    showError('sender-address', 'برجاء إدخال عنوان استلام الشحنة'); 
-    isValid = false; 
-  } else { 
-    clearError('sender-address'); 
-  }
 
   const insideCount = parseInt(insideVal);
   if (insideVal === '') { showError('orders-inside', 'برجاء إدخال عدد الأوردرات'); isValid = false; }
@@ -779,13 +743,6 @@ async function submitDistForm() {
   if (outsideVal === '') { showError('orders-outside', 'برجاء إدخال عدد الأوردرات'); isValid = false; }
   else if (isNaN(outsideCount) || outsideCount < 0) { showError('orders-outside', 'يجب أن يكون الرقم 0 أو أكبر'); isValid = false; }
   else { clearError('orders-outside'); }
-
-  if (!distDetailsVal) {
-    if(document.getElementById('error-dist-details')) showError('dist-details', 'برجاء كتابة تفاصيل الشحنة');
-    isValid = false;
-  } else {
-    if(document.getElementById('error-dist-details')) clearError('dist-details');
-  }
 
   if (!isValid) {
     showToast('برجاء تصحيح الأخطاء في الحقول المطلوبة ⚠️');
@@ -801,10 +758,8 @@ async function submitDistForm() {
     type: 'distribution',
     senderName: nameVal,
     senderPhone: phoneVal,
-    senderAddress: addressVal, 
     ordersInsideZayat: insideCount,
     ordersOutsideZayat: outsideCount,
-    details: distDetailsVal,
     status: 'pending'
   };
   await logOrderToFirebase(orderData);
@@ -813,12 +768,10 @@ async function submitDistForm() {
 
 👤 *المرسِل:* ${nameVal}
 📞 *التليفون:* ${phoneVal}
-📍 *عنوان الاستلام:* ${addressVal}
 
 📦 *تفاصيل الشحنة:*
 • أوردرات داخل الزيات: ${insideCount}
 • أوردرات خارج الزيات: ${outsideCount}
-📝 *الملاحظات/التفاصيل:* ${distDetailsVal}
 
 ⏰ *وقت الطلب:* ${formattedDateTime}`;
 
@@ -852,16 +805,18 @@ window.loadFirebaseData = function() {
 
     const db = database; 
     
+    // المزامنة الحية للأقسام
     onValue(ref(db, 'categories'), (snapshot) => {
       const data = snapshot.val();
-      let firebaseCategories = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      firebaseCategories = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
       window.firebaseCategories = firebaseCategories;
       if(currentPage === 'page-offers') renderClientCategories();
     }, (err) => console.warn('Categories offline or syntax error:', err));
 
+    // المزامنة الحية للعروض 
     onValue(ref(db, 'offers'), (snapshot) => {
       const data = snapshot.val();
-      let firebaseOffers = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      firebaseOffers = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
       window.firebaseOffers = firebaseOffers;
       if(currentPage === 'page-offers') renderClientCategories();
     }, (err) => console.warn('Offers offline or syntax error:', err));

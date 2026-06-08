@@ -5,17 +5,15 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebas
 
 // بيانات الاتصال الخاصة بمشروعك على Firebase
  const firebaseConfig = {
-    apiKey: "AIzaSyA2L9YImlJS56duMH3EuQgSmHz8fEUlmXY",
-    authDomain: "test-8038c.firebaseapp.com",
-    databaseURL: "https://test-8038c-default-rtdb.firebaseio.com",
-    projectId: "test-8038c",
-    storageBucket: "test-8038c.firebasestorage.app",
-    messagingSenderId: "999761018383",
-    appId: "1:999761018383:web:2d4950b28f7ac2e2126d7a",
-    measurementId: "G-Z7EDJW909B"
+    apiKey: "AIzaSyDrQSzTcME1eSRXCRFIZ7r5VvDSkhmOaS4",
+    authDomain: "mr-delivery-4d789.firebaseapp.com",
+    projectId: "mr-delivery-4d789",
+    storageBucket: "mr-delivery-4d789.firebasestorage.app",
+    messagingSenderId: "988756110589",
+    appId: "1:988756110589:web:4dae3c5eb77809b57d6294",
+    measurementId: "G-Z480L3MDHH"
   };
-
-
+  
 // منع إعادة تهيئة التطبيق إذا كان يعمل بالفعل
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
