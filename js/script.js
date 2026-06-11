@@ -619,7 +619,7 @@ ${storesMsg}
   const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
 
   showToast('تم حفظ طلب الشراء بنجاح وجاري توجيهك للواتساب... 🚀');
-  setTimeout(() => { window.open(whatsappUrl, '_blank'); }, 1000);
+setTimeout(() => { window.location.href = whatsappUrl; }, 1000);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -720,7 +720,7 @@ ${pkgVal}
   const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
 
   showToast('تم حفظ طلب التوصيل بنجاح وجاري توجيهك للواتساب... 🚀');
-  setTimeout(() => { window.open(whatsappUrl, '_blank'); }, 1000);
+setTimeout(() => { window.location.href = whatsappUrl; }, 1000);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -826,7 +826,7 @@ async function submitDistForm() {
   const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
 
   showToast('تم حفظ طلب التوزيع بنجاح وجاري توجيهك للواتساب... 🚀');
-  setTimeout(() => { window.open(whatsappUrl, '_blank'); }, 1000);
+setTimeout(() => { window.location.href = whatsappUrl; }, 1000);
 }
 
 // ── Init Systems ──
@@ -870,3 +870,22 @@ window.loadFirebaseData = function() {
     console.warn('Firebase module lazy load skipped or network offline', e);
   }
 })();
+
+// الاستماع لأي كتابة بتحصل جوه الـ input الخاص ببند الطلب
+document.addEventListener('input', function (event) {
+    // التأكد إن المستخدم بيكتب جوه الـ input الصح عن طريق الـ class
+    if (event.target.classList.contains('store-item-input')) {
+        const inputField = event.target;
+        const wrapper = inputField.closest('.input-wrapper');
+        const errorMsg = wrapper.querySelector('.char-error-msg');
+
+        // الشرط: لو طول النص أكبر من 40 حرف
+        if (inputField.value.length > 40) {
+            errorMsg.style.display = 'block';       // إظهار رسالة الخطأ
+            inputField.style.borderColor = 'red';   // تغيير لون حدود الـ input للأحمر كتنبيه
+        } else {
+            errorMsg.style.display = 'none';        // إخفاء الرسالة لو النص مسموح به
+            inputField.style.borderColor = '';      // إعادة اللون الطبيعي للـ input
+        }
+    }
+});
