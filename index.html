@@ -170,10 +170,16 @@
                 <label>بند الطلب <span class="required">*</span></label>
                 <div class="items-container" id="items-container-1">
                   <div class="item-row">
-                    <div class="input-wrapper">
-                      <input type="text" class="store-item-input" maxlength="40" placeholder="مثال: 2 ساندوتش شاورما لارج" required>
-                      <i class="fa-solid fa-basket-shopping input-icon"></i>
-                    </div>
+
+                  <div class="input-wrapper">
+                   <input type="text" class="store-item-input" placeholder="مثال: 2 ساندوتش شاورما لارج" required>
+                   <i class="fa-solid fa-basket-shopping input-icon"></i>
+    
+                     <span class="char-error-msg" style="color: red; display: none; font-size: 0.85rem; margin-top: 5px;">
+                                   عذراً، يجب ألا يزيد بند الطلب عن 40 حرفاً!
+                      </span>
+                  </div>
+
                     <button type="button" class="btn-add-item" onclick="addItemField(1)">＋</button>
                   </div>
                 </div>
