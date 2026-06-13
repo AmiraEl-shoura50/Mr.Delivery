@@ -453,28 +453,37 @@ function addItemField(storeId) {
   const container = document.getElementById(`items-container-${storeId}`);
   if (!container) return;
 
-  // معرفة عدد البنود الحالية لتحديد الترقيم الجديد
-  const currentItemsCount = container.querySelectorAll('.item-row').length + 1;
-
-  // إنشاء سطر جديد يحتوي على الحقل وزر الحذف
+  // إنشاء صف جديد للبند المضاف
   const row = document.createElement('div');
   row.className = 'item-row';
-  row.style.cssText = "display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; width: 100%;";
+  row.style.cssText = "display: flex; gap: 10px; align-items: center; margin-bottom: 0.5rem;";
 
+  // محتوى الصف الجديد: الحقل + أيقونة الحذف (السلة)
   row.innerHTML = `
-    <div class="input-wrapper" style="flex: 1;">
-      <input type="text" class="store-item-input" maxlength="70" placeholder="${currentItemsCount} - مثال: أكتب البند التالي هنا" required>
+    <div class="input-wrapper" style="flex: 1; margin: 0;">
+      <input type="text" class="store-item-input" placeholder="أدخل بنداً آخر..." required>
       <i class="fa-solid fa-basket-shopping input-icon"></i>
+      <span class="char-error-msg" style="color: red; display: none; font-size: 0.85rem; margin-top: 5px;">
+        عذراً، يجب ألا يزيد بند الطلب عن 40 حرفاً!
+      </span>
     </div>
-    <button type="button" class="btn-remove-item" onclick="this.parentElement.remove(); updateItemsPlaceholder(${storeId});" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; padding: 0.8rem; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px;">
+    <button type="button" class="btn-remove-item" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 45px; height: 45px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0;">
       <i class="fa-solid fa-trash-can"></i>
     </button>
   `;
 
+  // تشغيل حدث الحذف عند الضغط على أيقونة السلة
+  row.querySelector('.btn-remove-item').addEventListener('click', function() {
+    row.remove();
+  });
+
+  // إضافة الصف الجديد داخل الحاوية
   container.appendChild(row);
 
-  // إعادة تشغيل أحداث الانيميشن والمؤشر للحقول الجديدة لو مفعّلة
-  if (typeof initInputsHoverAdjustments === 'function') initInputsHoverAdjustments();
+  // إذا كنت تستخدمين دالة لتحديث تأثير الهوفر على الأزرار الجديدة
+  if (typeof initCursorHoverEvents === 'function') {
+    initCursorHoverEvents();
+  }
 }
 
 // دالة مساعدة لتحديث الأرقام التلقائية (الـ Placeholder) في حال العميل مسح بند في النص
