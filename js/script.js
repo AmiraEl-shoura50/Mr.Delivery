@@ -593,81 +593,259 @@ function renderBuyStores() {
 
   initCursorHoverEvents();
 }
+// ══════════════════════════════════════════════════════════════
+// 🛍️ PURCHASE ORDER FORM LOGIC (النسخة المتوافقة تماماً مع الـ HTML الخاص بكِ)
+// ══════════════════════════════════════════════════════════════
 
-async function submitBuyForm() {
-  const nameInput = document.getElementById('buy-name');
-  const phoneInput = document.getElementById('buy-phone');
-  const addressInput = document.getElementById('buy-address');
+// دالة تهيئة حقول الشراء عند تحميل الصفحة
+function initBuyForm() {
+  // نقوم بتصفير المحلات الإضافية والإبقاء على المحل الأول فقط كبداية
+  const container = document.getElementById('store-block-1')?.parentElement;
+  if (container) {
+    const blocks = container.querySelectorAll('.store-block');
+    blocks.forEach((block, index) => {
+      if (index > 0) block.remove(); // حذف أي محل زائد متبقي من زيارة سابقة
+    });
+  }
+  
+  // إظهار زر إضافة محل وإخفاء رسالة الحد الأقصى
+  const addBtn = document.getElementById('btn-add-store');
+  const limitNote = document.getElementById('buy-store-limit-note');
+  if (addBtn) addBtn.style.display = 'block';
+  if (limitNote) limitNote.style.display = 'none';
+}
 
-  const nameVal = nameInput.value.trim();
-  const phoneVal = phoneInput.value.trim();
-  const addressVal = addressInput.value.trim();
+// 1️⃣ دالة إضافة بند جديد (مستطيل تحت مع أيقونة حذف)
+function addItemField(storeId) {
+  const container = document.getElementById(`items-container-${storeId}`);
+  if (!container) return;
 
-  let isValid = true;
+  // إنشاء صف البند الجديد
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.style.cssText = "display: flex; gap: 10px; align-items: center; margin-bottom: 0.5rem;";
 
-  if (!nameVal) { showError('buy-name', 'برجاء إدخال الاسم بالكامل'); isValid = false; } else { clearError('buy-name'); }
-  const phoneCheck = validateEgyptianPhone(phoneVal);
-  if (!phoneCheck.valid) { showError('buy-phone', phoneCheck.msg); isValid = false; } else { clearError('buy-phone'); }
-  const addressCheck = validateShortAddress(addressVal);
-  if (!addressCheck.valid) { showError('buy-address', addressCheck.msg); isValid = false; } else { clearError('buy-address'); }
+  // إضافة الحقل ومعه أيقونة الحذف الحمرة النشطة
+  row.innerHTML = `
+    <div class="input-wrapper" style="flex: 1; margin: 0;">
+      <input type="text" class="store-item-input" placeholder="أدخل بنداً آخر..." required>
+      <i class="fa-solid fa-basket-shopping input-icon"></i>
+      <span class="char-error-msg" style="color: red; display: none; font-size: 0.85rem; margin-top: 5px;">
+        عذراً، يجب ألا يزيد بند الطلب عن 40 حرفاً!
+      </span>
+    </div>
+    <button type="button" class="btn-remove-item" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); width: 45px; height: 45px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0;">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  `;
 
-  buyStores.forEach(s => {
-    if (!s.name.trim()) { showError(`store-name-${s.id}`, 'برجاء إدخال اسم المحل'); isValid = false; } else { clearError(`store-name-${s.id}`); }
-
-    const hasEmptyItems = s.items.some(item => !item.trim());
-    if (hasEmptyItems || s.items.length === 0) {
-      showError(`store-items-${s.id}`, 'برجاء ملء جميع حقول البنود المطلوبة من هذا المحل');
-      isValid = false;
-    } else {
-      clearError(`store-items-${s.id}`);
-    }
+  // تفعيل حدث الحذف عند الضغط على السلة
+  row.querySelector('.btn-remove-item').addEventListener('click', function() {
+    row.remove();
   });
 
-  if (!isValid) {
-    showToast('برجاء تصحيح الأخطاء في الحقول المطلوبة ⚠️');
+  // إضافة البند داخل الحاوية الخاصة بالمحل
+  container.appendChild(row);
+
+  // تحديث تأثير الهوفر للماوس لو متاح في ملفك
+  if (typeof initCursorHoverEvents === 'function') initCursorHoverEvents();
+}
+
+// 2️⃣ دالة إضافة محل جديد (بحد أقصى 3 محلات)
+function addNewStoreField() {
+  // جلب جميع المحلات الحالية في الصفحة للحساب
+  const currentStores = document.querySelectorAll('.store-block');
+  const count = currentStores.length;
+
+  if (count >= 3) {
+    showToast('أقصى حد هو 3 محلات للطلب الواحد لتفادي التأخير ⚠️');
     return;
   }
 
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
-  const formattedDateTime = `${dateStr} في تمام الساعة ${timeStr}`;
+  const nextIndex = count + 1;
+  const parentContainer = document.getElementById('store-block-1').parentElement;
+  const addStoreBtn = document.getElementById('btn-add-store');
+
+  // بناء عنصر المحل الجديد بنفس الهيكل الـ HTML الخاص بكِ تماماً
+  const newStoreBlock = document.createElement('div');
+  newStoreBlock.className = 'store-block';
+  newStoreBlock.id = `store-block-${nextIndex}`;
+  newStoreBlock.style.cssText = "margin-bottom: 1.5rem; padding: 1.5rem 1rem; background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); border-radius: 14px; position: relative;";
+
+  newStoreBlock.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h4 style="margin: 0; color: var(--primary); font-size: 0.95rem;">
+        <i class="fa-solid fa-shop"></i> المحل رقم ${nextIndex}
+      </h4>
+      <button type="button" onclick="this.closest('.store-block').remove(); updateStoreNumbers();" style="background: none; border: none; color: #EF4444; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+        <i class="fa-solid fa-trash-can"></i> حذف المحل
+      </button>
+    </div>
+
+    <div class="input-group" style="margin-bottom: 1.2rem;">
+      <label>اسم المحل / المطعم <span class="required">*</span></label>
+      <div class="input-wrapper">
+        <input type="text" class="store-name-input" placeholder="مثال: مطعم أبو عمار، أو سوبرماركت التقوى" required>
+        <i class="fa-solid fa-store input-icon"></i>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>بند الطلب <span class="required">*</span></label>
+      <div class="items-container" id="items-container-${nextIndex}">
+        <div class="item-row" style="display: flex; gap: 10px; align-items: center; margin-bottom: 0.5rem;">
+          <div class="input-wrapper" style="flex: 1; margin: 0;">
+            <input type="text" class="store-item-input" placeholder="مثال: 2 ساندوتش شاورما لارج" required>
+            <i class="fa-solid fa-basket-shopping input-icon"></i>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-add-item-block" onclick="addItemField(${nextIndex})"
+        style="width: 100%; text-align: right; padding: 0.8rem 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 14px; color: var(--text); font-family: 'Cairo', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-top: 0.5rem; transition: all 0.3s;">
+        <i class="fa-solid fa-plus" style="font-size: 0.9rem; color: var(--primary);"></i>
+        <span style="font-size: 0.95rem; color: var(--text-muted);">إضافة بند</span>
+      </button>
+    </div>
+  `;
+
+  // إدخال المحل الجديد في الـ DOM قبل زرار "محل جديد" مباشرة
+  parentContainer.insertBefore(newStoreBlock, addStoreBtn);
+
+  // تحديث حالة الأزرار والرسائل التحذيرية للعدد
+  updateStoreNumbers();
+  
+  if (typeof initCursorHoverEvents === 'function') initCursorHoverEvents();
+}
+
+// دالة مساعدة لتحديث أرقام وإعدادات المحلات عند إضافة أو حذف محل
+function updateStoreNumbers() {
+  const storeBlocks = document.querySelectorAll('.store-block');
+  const addBtn = document.getElementById('btn-add-store');
+  const limitNote = document.getElementById('buy-store-limit-note');
+
+  storeBlocks.forEach((block, index) => {
+    const idx = index + 1;
+    // تحديث الـ ID الخاص بالمربع وحاوية البنود وزر الإضافة ليظل الترقيم صحيحاً ومتناسقاً
+    block.id = `store-block-${idx}`;
+    const h4 = block.querySelector('h4');
+    if (h4) h4.innerHTML = `<i class="fa-solid fa-shop"></i> المحل رقم ${idx}`;
+    
+    const container = block.querySelector('.items-container');
+    if (container) container.id = `items-container-${idx}`;
+    
+    const addBlockBtn = block.querySelector('.btn-add-item-block');
+    if (addBlockBtn) addBlockBtn.setAttribute('onclick', `addItemField(${idx})`);
+  });
+
+  // التحكم في إظهار زر "محل جديد" أو رسالة الحد الأقصى 3
+  if (storeBlocks.length >= 3) {
+    if (addBtn) addBtn.style.display = 'none';
+    if (limitNote) limitNote.style.display = 'block';
+  } else {
+    if (addBtn) addBtn.style.display = 'block';
+    if (limitNote) limitNote.style.display = 'none';
+  }
+}
+
+// 3️⃣ دالة التحقق وإرسال رسالة الواتساب المضمونة
+async function submitBuyForm() {
+  const name = document.getElementById('buy-name').value.trim();
+  const phone = document.getElementById('buy-phone').value.trim();
+  const address = document.getElementById('buy-address').value.trim();
+
+  // التحقق من الحقول الأساسية أولاً
+  let isFormValid = true;
+  if (!name) { showError('buy-name', 'برجاء إدخال الاسم'); isFormValid = false; } else { clearError('buy-name'); }
+  
+  const phoneCheck = validateEgyptianPhone(phone);
+  if (!phoneCheck.valid) { showError('buy-phone', phoneCheck.msg); isFormValid = false; } else { clearError('buy-phone'); }
+  
+  const addressCheck = validateShortAddress(address);
+  if (!addressCheck.valid) { showError('buy-address', addressCheck.msg); isFormValid = false; } else { clearError('buy-address'); }
+
+  if (!isFormValid) {
+    showToast("برجاء تصحيح البيانات الأساسية أولاً! ⚠️");
+    return;
+  }
+
+  // بناء نص رسالة الواتساب وتجميع المحلات
+  let message = `🛒 *طلب شراء جديد - مستر ديليفري*\n\n`;
+  message += `👤 *الاسم:* ${name}\n`;
+  message += `📱 *الرقم:* ${phone}\n`;
+  message += `📍 *العنوان:* ${address}\n`;
+  message += `──────────────────\n\n`;
+
+  const storeBlocks = document.querySelectorAll('.store-block');
+  let hasValidStores = true;
+
+  storeBlocks.forEach((block, index) => {
+    const nameInput = block.querySelector('.store-name-input');
+    const storeName = nameInput ? nameInput.value.trim() : '';
+
+    if (!storeName) {
+      showToast(`برجاء كتابة اسم المحل رقم ${index + 1} 🏪`);
+      if (nameInput) nameInput.style.borderColor = 'var(--primary)';
+      hasValidStores = false;
+      return;
+    } else {
+      if (nameInput) nameInput.style.borderColor = '';
+    }
+
+    message += `🏪 *المحل رقم ${index + 1}:* ${storeName}\n`;
+    message += `📋 *البنود المطلوبة:*\n`;
+
+    const itemInputs = block.querySelectorAll('.store-item-input');
+    let itemCounter = 1;
+    let hasItems = false;
+
+    itemInputs.forEach(input => {
+      const itemVal = input.value.trim();
+      if (itemVal !== "") {
+        message += `  ${itemCounter}- ${itemVal}\n`;
+        itemCounter++;
+        hasItems = true;
+      }
+    });
+
+    if (!hasItems) {
+      showToast(`برجاء كتابة بند واحد على الأقل للمحل رقم ${index + 1} 🛒`);
+      hasValidStores = false;
+      return;
+    }
+
+    message += `──────────────────\n\n`;
+  });
+
+  if (!hasValidStores) return;
+
+  // جلب البيانات لرفعها للفايربيس لو الدالة مفعّلة عندك
+  const firebaseStores = [];
+  storeBlocks.forEach(block => {
+    const storeName = block.querySelector('.store-name-input').value.trim();
+    const items = Array.from(block.querySelectorAll('.store-item-input')).map(i => i.value.trim()).filter(i => i !== '');
+    firebaseStores.push({ name: storeName, items: items });
+  });
 
   const orderData = {
     type: 'buy',
-    clientName: nameVal,
-    clientPhone: phoneVal,
-    clientAddress: addressVal,
-    stores: buyStores.map(s => ({ name: s.name.trim(), items: s.items.map(item => item.trim()) })),
+    clientName: name,
+    clientPhone: phone,
+    clientAddress: address,
+    stores: firebaseStores,
     status: 'pending'
   };
   await logOrderToFirebase(orderData);
 
-  let storesMsg = '';
-  buyStores.forEach((s, idx) => {
-    storesMsg += `\n🏪 *المحل رقم (${idx + 1}):* ${s.name.trim()}\n🛒 *البنود:*\n`;
-    s.items.forEach(item => {
-      storesMsg += `  ▪️ ${item.trim()}\n`;
-    });
-  });
-
-  const msg = `🛍️ *طلب شراء جديد — مستر ديليفري*
-
-👤 *العميل:* ${nameVal}
-📞 *التليفون:* ${phoneVal}
-📍 *العنوان:* ${addressVal}
-
-📦 *تفاصيل الطلب:*
-${storesMsg}
-⏰ *وقت الطلب:* ${formattedDateTime}`;
-
-  const encodedMsg = encodeURIComponent(msg);
+  // تشفير الرسالة وفتح رابط الواتساب الصحيح والمجرب
+  const encodedMsg = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
 
-  showToast('تم حفظ طلب الشراء بنجاح وجاري توجيهك للواتساب... 🚀');
-setTimeout(() => { window.location.href = whatsappUrl; }, 1000);
+  showToast('تم حفظ طلبك بنجاح وجاري توجيهك للواتساب... 🚀');
+  setTimeout(() => { 
+    window.location.href = whatsappUrl; 
+  }, 1000);
 }
-
 // ══════════════════════════════════════════════════════════════
 // 📦 DELIVERY ORDER FORM LOGIC (page-delivery)
 // ══════════════════════════════════════════════════════════════
