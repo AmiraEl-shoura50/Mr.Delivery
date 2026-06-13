@@ -12,7 +12,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
 </head>
 
 <body>
@@ -41,7 +41,8 @@
   <div class="page active" id="page-home">
     <div class="home-inner" style="margin:auto">
       <div class="logo-wrap">
-        <div class="logo-icon"><img width="56" height="56" src="https://i.postimg.cc/9FFzWPW4/IMG-20260607-032220-451.png" alt=""></div>
+        <div class="logo-icon"><img width="56" height="56"
+            src="https://i.postimg.cc/9FFzWPW4/IMG-20260607-032220-451.png" alt=""></div>
         <div class="logo-text">مستر <span>ديليفري</span></div>
       </div>
 
@@ -153,41 +154,55 @@
 
         <div class="form-section">
           <h3 class="section-title"><i class="fa-solid fa-store"></i> الطلبات والمحلات</h3>
-          
+
           <div id="buy-stores-container">
-            <div class="store-block" id="store-block-1" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); border-radius: 14px;">
-              <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 0.95rem;"><i class="fa-solid fa-shop"></i> المحل رقم 1</h4>
-              
+            <div class="store-block" id="store-block-1"
+              style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); border-radius: 14px;">
+              <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 0.95rem;"><i
+                  class="fa-solid fa-shop"></i> المحل رقم 1</h4>
+
               <div class="input-group">
                 <label>اسم المحل / المطعم <span class="required">*</span></label>
                 <div class="input-wrapper">
-                  <input type="text" class="store-name-input" placeholder="مثال: مطعم أبو عمار، أو سوبرماركت التقوى" required>
+                  <input type="text" class="store-name-input" placeholder="مثال: مطعم أبو عمار، أو سوبرماركت التقوى"
+                    required>
                   <i class="fa-solid fa-store input-icon"></i>
                 </div>
               </div>
 
               <div class="input-group">
-                <label>بند الطلب <span class="required">*</span></label>
+                <label>الطلب من المحل / البنود <span class="required">*</span></label>
+
+                <!-- حاوية بنود الطلبات النشطة -->
                 <div class="items-container" id="items-container-1">
-                  <div class="item-row">
-                    <div class="input-wrapper">
-                      <input type="text" class="store-item-input" maxlength="70" placeholder="مثال: 2 ساندوتش شاورما لارج" required>
+                  <div class="item-row" style="margin-bottom: 0.5rem;">
+                    <div class="input-wrapper" style="width: 100%;">
+                      <input type="text" class="store-item-input" maxlength="70"
+                        placeholder="1 - مثال: 2 ساندوتش شاورما لارج" required>
                       <i class="fa-solid fa-basket-shopping input-icon"></i>
                     </div>
-                    <button type="button" class="btn-add-item" onclick="addItemField(1)">＋</button>
                   </div>
                 </div>
+
+                <!-- زرار إضافة بند جديد على شكل مستطيل كامل زي الصورة -->
+                <button type="button" class="btn-add-item-block" onclick="addItemField(1)"
+                  style="width: 100%; text-align: right; padding: 0.8rem 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 14px; color: var(--text); font-family: 'Cairo', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-top: 0.5rem; transition: all 0.3s;">
+                  <i class="fa-solid fa-plus" style="font-size: 0.9rem; color: var(--primary);"></i>
+                  <span style="font-size: 0.95rem; color: var(--text-muted);">إضافة بند</span>
+                </button>
               </div>
             </div>
           </div>
 
-          <button type="button" id="btn-add-store" class="btn-main btn-secondary" onclick="addNewStoreField()" style="width:100%;margin-top:1rem;justify-content:center">
+          <button type="button" id="btn-add-store" class="btn-main btn-secondary" onclick="addNewStoreField()"
+            style="width:100%;margin-top:1rem;justify-content:center">
             <div class="btn-content">
               <span class="btn-label">＋ محل جديد</span>
               <span class="btn-desc">أضف محل آخر (بحد أقصى 3)</span>
             </div>
           </button>
-          <div id="buy-store-limit-note" style="display:none;margin-top:1rem;padding:1rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;font-size:0.8rem;color:#EF4444;text-align:center">
+          <div id="buy-store-limit-note"
+            style="display:none;margin-top:1rem;padding:1rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;font-size:0.8rem;color:#EF4444;text-align:center">
             🚨 وصلت للحد الأقصى من المحلات (٣). لو عايز أكتر اتفضل اطلب مرة تانية.
           </div>
         </div>
@@ -278,7 +293,9 @@
           <div class="input-group">
             <label for="delivery-package">وصف الشحنة <span class="required">*</span></label>
             <div class="input-wrapper">
-              <textarea id="delivery-package" placeholder="أكتب وصف مختصر للحاجة اللي بتتوصيل..." style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:80px;resize:vertical" required></textarea>
+              <textarea id="delivery-package" placeholder="أكتب وصف مختصر للحاجة اللي بتتوصيل..."
+                style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:80px;resize:vertical"
+                required></textarea>
             </div>
             <span class="error-msg" id="error-delivery-package">برجاء وصف الشحنة</span>
           </div>
@@ -389,7 +406,9 @@
           <div class="input-group" style="margin-top: 1rem;">
             <label for="dist-details">تفاصيل الشحنة <span class="required">*</span></label>
             <div class="input-wrapper">
-              <textarea id="dist-details" placeholder="اكتب هنا تفاصيل الشحنة أو أي ملاحظات إضافية للمندوب..." style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:90px;resize:vertical" required></textarea>
+              <textarea id="dist-details" placeholder="اكتب هنا تفاصيل الشحنة أو أي ملاحظات إضافية للمندوب..."
+                style="background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:14px;padding:1rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:0.95rem;width:100%;min-height:90px;resize:vertical"
+                required></textarea>
             </div>
             <span class="error-msg" id="error-dist-details">برجاء كتابة تفاصيل الشحنة</span>
           </div>

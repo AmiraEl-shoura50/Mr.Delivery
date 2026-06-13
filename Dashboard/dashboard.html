@@ -670,12 +670,17 @@ img { display: block; max-width: 100%; }
 
 <div id="toastWrap"></div>
 
-<script>
-  // جعل الدوال الأساسية متاحة للـ HTML كمستند خارجي
+<<script>
+  // تعريف متغيرات حالة الرفع والواجهات بشكل عام في السكريبت العالمي (Global)
   var currentView = 'overview';
   var catToDelete = null;
   var offerToDelete = null;
   var editMode = false;
+  var currentEditId = null;
+  var catUploading = false;
+  var offerUploading = false;
+  var categories = {};
+  var offers = {};
 
   // التأكد من حالة اتصال فايربيز وتحديث الإشارة فوق على اليمين
   function checkFirebaseConnection() {
@@ -709,7 +714,6 @@ img { display: block; max-width: 100%; }
     remove 
   } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
-  
   const db = database; 
 
   // المراجع الأساسية للجداول
@@ -718,10 +722,8 @@ img { display: block; max-width: 100%; }
   const offersRef = ref(db, 'offers');
 
   /* ══════════════════════════════════════
-     CLOUDINARY GLOBAL CONFIG
-  ══════════════════════════════════════ */
-const CL_CLOUD  = "dtw2jaesz";    // Cloudinary cloud name
-const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
+     الاستماع المباشر لقواعد البيانات (Firebase Listeners)
+     ══════════════════════════════════════ */
   // الاستماع المباشر للأقسام
   onValue(categoriesRef, (snapshot) => {
     const data = snapshot.val() || {};
@@ -740,8 +742,8 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
   });
 
   /* ══════════════════════════════════════
-     DATA ACTIONS (SAVE & UPDATE)
-  ══════════════════════════════════════ */
+     عمليات حفظ وتحديث وحذف البيانات
+     ══════════════════════════════════════ */
   window.addProduct = function(name, price, category) {
     const newProductRef = push(productsRef);
     set(newProductRef, {
@@ -777,7 +779,7 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     }
   };
 
-
+  // حفظ وتحديث العروض
   window.saveOffer = function() {
     const name = document.getElementById('oName').value.trim();
     const place = document.getElementById('oPlace').value.trim();
@@ -809,7 +811,7 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     }
   };
 
-  // تفعيل عمليات الحذف الفوري وتأكيدها عند الضغط على تأكيد
+  // تفعيل عمليات الحذف الفوري وتأكيدها عند الضغط على زر التاكيد بالمودال
   document.getElementById('confirmOk').onclick = function() {
     if(window.catToDelete) {
       remove(ref(db, `categories/${window.catToDelete}`))
@@ -822,7 +824,6 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     }
   };
 
-  // تصدير دوال الحذف المباشر لكي تقرأها أزرار الجداول المتولدة ديناميكياً
   window.deleteProduct = function(productId) {
     remove(ref(db, `products/${productId}`))
       .then(() => console.log("تم حذف المنتج بنجاح."))
@@ -831,10 +832,9 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
 </script>
 
 <script>
-  // تعريف متغيرات حالة الرفع بشكل عام في السكريبت
-  var catUploading = false;
-  var offerUploading = false;
-
+  /* ══════════════════════════════════════
+     دوال التحكم بالواجهات وعرض البيانات (DOM Manipulation)
+     ══════════════════════════════════════ */
   function nav(viewId) {
     currentView = viewId;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -943,8 +943,6 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
           </div>
         </div>`;
     });
-
-    // ⚠️ تم حذف استدعاء renderCategories من هنا لمنع الوميض والـ Flash اللانهائي في العناصر
   }
 
   function updateCatSelects(data) {
@@ -999,15 +997,14 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
   }
 
   /* ══════════════════════════════════════
-     CLOUDINARY UPLOAD WITH PROGRESS BAR
-  ══════════════════════════════════════ */
+     رفع الصور عبر CLOUDINARY (Cloudinary API Call)
+     ══════════════════════════════════════ */
   async function cloudinaryUpload(file, type) {
     const isOffer = type === 'offer';
     const PW  = document.getElementById(isOffer ? 'oPW'  : 'cPW');
     const PB  = document.getElementById(isOffer ? 'oPB'  : 'cPB');
     const PT  = document.getElementById(isOffer ? 'oPT'  : 'cPT');
 
-    // 📂 تم وضع الثوابت هنا مباشرة لضمان وصول الدالة إليها بنجاح وبدون مشاكل الـ Scope
     const LOCAL_CLOUD  = "dtw2jaesz";
     const LOCAL_PRESET = "mrDelivery";
 
@@ -1058,8 +1055,8 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
   }
 
   /* ══════════════════════════════════════
-     IMAGE HANDLERS (Cloudinary Integrated)
-  ══════════════════════════════════════ */
+     مستقبلات واجهات الرفع (Upload Handlers)
+     ══════════════════════════════════════ */
   window.uploadImg = async function(input, type) {
     const file = input.files[0];
     if (!file) return;
@@ -1122,8 +1119,8 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
   }
 
   /* ══════════════════════════════════════
-     PICKERS (Emojis & Colors)
-  ══════════════════════════════════════ */
+     بناء لوحات اختيار الألوان والأيقونات التفاعلية
+     ══════════════════════════════════════ */
   const EMOJIS = ['🍔','🛒','🥛','🍕','🥩','🍰','🥗','🍜','☕','🧃','🍦','🥚','🧁','🫙','🥖','🌮','🍣','🥪','🥩','🍱' ,'🧥'];
   const COLORS  = ['#2D1810','#0D1A0D','#0A1020','#1A1A0D','#1A0D1A','#0D1018','#1A1005','#101A10','#0D0D1A','#1A1520','#2A1520','#0A1A1A'];
 
@@ -1156,9 +1153,9 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
   };
 
   /* ══════════════════════════════════════
-     MODALS CONTROL
-  ══════════════════════════════════════ */
-  function openCatModal() {
+     التحكم في فتح وإغلاق النوافذ المنبثقة (Modals)
+     ══════════════════════════════════════ */
+  window.openCatModal = function() {
     window.editMode = false; window.currentEditId = null;
     document.getElementById('mCatTitle').innerText = '➕ قسم جديد';
     document.getElementById('cName').value = '';
@@ -1172,7 +1169,7 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     document.getElementById('mCat').classList.add('open');
   }
 
-  function editCat(id) {
+  window.editCat = function(id) {
     window.editMode = true; window.currentEditId = id;
     const cat = window.categories[id];
     document.getElementById('mCatTitle').innerText = '✏️ تعديل القسم';
@@ -1192,7 +1189,7 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     document.getElementById('mCat').classList.add('open');
   }
 
-  function openOfferModal() {
+  window.openOfferModal = function() {
     window.editMode = false; window.currentEditId = null;
     document.getElementById('mOfferTitle').innerText = '➕ عرض جديد';
     document.getElementById('oName').value = '';
@@ -1204,7 +1201,7 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     document.getElementById('mOffer').classList.add('open');
   }
 
-  function editOffer(id) {
+  window.editOffer = function(id) {
     window.editMode = true; window.currentEditId = id;
     const off = window.offers[id];
     document.getElementById('mOfferTitle').innerText = '✏️ تعديل العرض';
@@ -1223,20 +1220,20 @@ const CL_PRESET = "mrDelivery";   // Cloudinary unsigned upload preset
     document.getElementById('mOffer').classList.add('open');
   }
 
-  function triggerDeleteCat(id) {
+  window.triggerDeleteCat = function(id) {
     window.catToDelete = id; window.offerToDelete = null;
     document.getElementById('confirmMsg').innerText = `هل أنت متأكد من حذف هذا القسم؟ سيتم حذف البيانات المرتبطة به نهائياً.`;
     document.getElementById('mConfirm').classList.add('open');
   }
 
-  function triggerDeleteOffer(id) {
+  window.triggerDeleteOffer = function(id) {
     window.offerToDelete = id; window.catToDelete = null;
     document.getElementById('confirmMsg').innerText = `هل أنت متأكد من حذف هذا العرض نهائياً من المتجر؟`;
     document.getElementById('mConfirm').classList.add('open');
   }
 
-  function closeM(id) { document.getElementById(id).classList.remove('open'); }
-  function bgClose(e, id) { if(e.target.id === id) closeM(id); }
+  window.closeM = function(id) { document.getElementById(id).classList.remove('open'); }
+  window.bgClose = function(e, id) { if(e.target.id === id) closeM(id); }
 
   function showToast(msg, type='ok') {
     const wrap = document.getElementById('toastWrap');

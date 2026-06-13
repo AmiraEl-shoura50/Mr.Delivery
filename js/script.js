@@ -73,14 +73,14 @@ function goTo(pageId) {
 
   const trans = document.getElementById('transition');
   if (!trans) return;
-  
+
   trans.className = 'page-transition enter';
 
   setTimeout(() => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(pageId);
     if (target) target.classList.add('active');
-    
+
     if (pageId === 'page-offers') {
       pageHistory = ['page-home'];
     } else if (pageId === 'page-offers-detail') {
@@ -88,7 +88,7 @@ function goTo(pageId) {
     } else {
       pageHistory.push(currentPage);
     }
-    
+
     currentPage = pageId;
     updateNavDots();
     trans.className = 'page-transition exit';
@@ -102,7 +102,7 @@ function goBack() {
     pageHistory = [];
     const trans = document.getElementById('transition');
     if (trans) trans.className = 'page-transition enter';
-    
+
     setTimeout(() => {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       const homeTarget = document.getElementById('page-home');
@@ -119,7 +119,7 @@ function goBack() {
     const prev = pageHistory.pop();
     const trans = document.getElementById('transition');
     if (trans) trans.className = 'page-transition enter';
-    
+
     setTimeout(() => {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       const target = document.getElementById(prev);
@@ -189,10 +189,10 @@ function animateOfferCards() {
 }
 
 // ── Trigger Load & Navigation From Main Home Button ──
-window.onOffersAndProductsClick = function() {
+window.onOffersAndProductsClick = function () {
   pageHistory = ['page-home'];
   goTo('page-offers');
-  
+
   if (typeof window.loadFirebaseData === 'function') {
     window.loadFirebaseData();
   } else {
@@ -201,7 +201,7 @@ window.onOffersAndProductsClick = function() {
 };
 
 // ── Render Client Categories Dynamically from Firebase ──
-window.renderClientCategories = function() {
+window.renderClientCategories = function () {
   const grid = document.getElementById('categoriesGrid');
   if (!grid) return;
 
@@ -236,7 +236,7 @@ window.renderClientCategories = function() {
 };
 
 // ── Open Category & Show Offers Dynamically ──
-window.openCategory = function(catId) {
+window.openCategory = function (catId) {
   const cats = window.firebaseCategories || [];
   const offers = window.firebaseOffers || [];
   const cat = cats.find(c => c.id === catId);
@@ -262,7 +262,7 @@ window.openCategory = function(catId) {
         <div class="empty-text" style="color: var(--text-muted);">لا توجد عروض نشطة في هذا القسم حالياً</div>
       </div>
     `;
-    pageHistory = ['page-home', 'page-offers']; 
+    pageHistory = ['page-home', 'page-offers'];
     goTo('page-offers-detail');
     return;
   }
@@ -314,12 +314,12 @@ function showToast(msg) {
 // ── Ripple Effect ──
 function initRipples() {
   document.querySelectorAll('.btn-main').forEach(btn => {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function (e) {
       const r = document.createElement('span');
       r.className = 'ripple';
       const rect = this.getBoundingClientRect();
       const size = Math.max(rect.width, rect.height);
-      r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+      r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`;
       this.appendChild(r);
       setTimeout(() => r.remove(), 600);
     });
@@ -449,16 +449,53 @@ function removeStoreField(storeId) {
   renderBuyStores();
 }
 
-window.addItemField = function(storeId) {
-  const store = buyStores.find(s => s.id === storeId);
-  if (store) {
-    store.items.push('');
-    renderBuyStores();
-    initInputsHoverAdjustments();
-  }
-};
+function addItemField(storeId) {
+  const container = document.getElementById(`items-container-${storeId}`);
+  if (!container) return;
 
-window.removeItemField = function(storeId, itemIndex) {
+  // معرفة عدد البنود الحالية لتحديد الترقيم الجديد
+  const currentItemsCount = container.querySelectorAll('.item-row').length + 1;
+
+  // إنشاء سطر جديد يحتوي على الحقل وزر الحذف
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.style.cssText = "display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; width: 100%;";
+
+  row.innerHTML = `
+    <div class="input-wrapper" style="flex: 1;">
+      <input type="text" class="store-item-input" maxlength="70" placeholder="${currentItemsCount} - مثال: أكتب البند التالي هنا" required>
+      <i class="fa-solid fa-basket-shopping input-icon"></i>
+    </div>
+    <button type="button" class="btn-remove-item" onclick="this.parentElement.remove(); updateItemsPlaceholder(${storeId});" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #EF4444; padding: 0.8rem; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px;">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  `;
+
+  container.appendChild(row);
+
+  // إعادة تشغيل أحداث الانيميشن والمؤشر للحقول الجديدة لو مفعّلة
+  if (typeof initInputsHoverAdjustments === 'function') initInputsHoverAdjustments();
+}
+
+// دالة مساعدة لتحديث الأرقام التلقائية (الـ Placeholder) في حال العميل مسح بند في النص
+function updateItemsPlaceholder(storeId) {
+  const container = document.getElementById(`items-container-${storeId}`);
+  if (!container) return;
+
+  const rows = container.querySelectorAll('.item-row');
+  rows.forEach((row, index) => {
+    const input = row.querySelector('.store-item-input');
+    if (input) {
+      if (index === 0) {
+        input.placeholder = "1 - مثال: 2 ساندوتش شاورما لارج";
+      } else {
+        input.placeholder = `${index + 1} - مثال: أكتب البند التالي هنا`;
+      }
+    }
+  });
+}
+
+window.removeItemField = function (storeId, itemIndex) {
   const store = buyStores.find(s => s.id === storeId);
   if (store) {
     if (store.items.length <= 1) {
@@ -470,7 +507,7 @@ window.removeItemField = function(storeId, itemIndex) {
   }
 };
 
-window.updateStoreName = function(id, val) {
+window.updateStoreName = function (id, val) {
   const store = buyStores.find(s => s.id === id);
   if (store) {
     store.name = val;
@@ -478,7 +515,7 @@ window.updateStoreName = function(id, val) {
   }
 };
 
-window.updateStoreItemValue = function(storeId, itemIndex, val) {
+window.updateStoreItemValue = function (storeId, itemIndex, val) {
   const store = buyStores.find(s => s.id === storeId);
   if (store) {
     store.items[itemIndex] = val;
@@ -498,10 +535,10 @@ function renderBuyStores() {
             <input type="text" class="store-item-input" maxlength="70" value="${itemValue}" placeholder="مثال: ٢ ساندوتش شاورما لارج" oninput="updateStoreItemValue('${store.id}', ${itemIdx}, this.value)" required>
             <i class="fa-solid fa-basket-shopping input-icon"></i>
           </div>
-          ${itemIdx === 0 
-            ? `<button type="button" class="btn-add-item" onclick="addItemField('${store.id}')" style="background: var(--primary, #ff9800); color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;">＋</button>`
-            : `<button type="button" class="btn-remove-item" onclick="removeItemField('${store.id}', ${itemIdx})" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">×</button>`
-          }
+          ${itemIdx === 0
+          ? `<button type="button" class="btn-add-item" onclick="addItemField('${store.id}')" style="background: var(--primary, #ff9800); color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;">＋</button>`
+          : `<button type="button" class="btn-remove-item" onclick="removeItemField('${store.id}', ${itemIdx})" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">×</button>`
+        }
         </div>
       `;
     }).join('');
@@ -567,13 +604,13 @@ async function submitBuyForm() {
 
   buyStores.forEach(s => {
     if (!s.name.trim()) { showError(`store-name-${s.id}`, 'برجاء إدخال اسم المحل'); isValid = false; } else { clearError(`store-name-${s.id}`); }
-    
+
     const hasEmptyItems = s.items.some(item => !item.trim());
-    if (hasEmptyItems || s.items.length === 0) { 
-      showError(`store-items-${s.id}`, 'برجاء ملء جميع حقول البنود المطلوبة من هذا المحل'); 
-      isValid = false; 
-    } else { 
-      clearError(`store-items-${s.id}`); 
+    if (hasEmptyItems || s.items.length === 0) {
+      showError(`store-items-${s.id}`, 'برجاء ملء جميع حقول البنود المطلوبة من هذا المحل');
+      isValid = false;
+    } else {
+      clearError(`store-items-${s.id}`);
     }
   });
 
@@ -601,7 +638,7 @@ async function submitBuyForm() {
   buyStores.forEach((s, idx) => {
     storesMsg += `\n🏪 *المحل رقم (${idx + 1}):* ${s.name.trim()}\n🛒 *البنود:*\n`;
     s.items.forEach(item => {
-        storesMsg += `  ▪️ ${item.trim()}\n`;
+      storesMsg += `  ▪️ ${item.trim()}\n`;
     });
   });
 
@@ -731,13 +768,13 @@ function initDistForm() {
   const outsideInput = document.getElementById('orders-outside');
   const senderName = document.getElementById('sender-name');
   const senderPhone = document.getElementById('sender-phone');
-  const senderAddress = document.getElementById('sender-address'); 
+  const senderAddress = document.getElementById('sender-address');
 
   if (!insideInput || !outsideInput) return;
 
   senderName.addEventListener('input', () => clearError('sender-name'));
   senderPhone.addEventListener('input', () => clearError('sender-phone'));
-  if (senderAddress) senderAddress.addEventListener('input', () => clearError('sender-address')); 
+  if (senderAddress) senderAddress.addEventListener('input', () => clearError('sender-address'));
   insideInput.addEventListener('input', () => clearError('orders-inside'));
   outsideInput.addEventListener('input', () => clearError('orders-outside'));
 }
@@ -745,14 +782,14 @@ function initDistForm() {
 async function submitDistForm() {
   const nameInput = document.getElementById('sender-name');
   const phoneInput = document.getElementById('sender-phone');
-  const addressInput = document.getElementById('sender-address'); 
+  const addressInput = document.getElementById('sender-address');
   const insideInput = document.getElementById('orders-inside');
   const outsideInput = document.getElementById('orders-outside');
-  const distDetailsInput = document.getElementById('dist-details'); 
+  const distDetailsInput = document.getElementById('dist-details');
 
   const nameVal = nameInput.value.trim();
   const phoneVal = phoneInput.value.trim();
-  const addressVal = addressInput ? addressInput.value.trim() : ''; 
+  const addressVal = addressInput ? addressInput.value.trim() : '';
   const insideVal = insideInput.value.trim();
   const outsideVal = outsideInput.value.trim();
   const distDetailsVal = distDetailsInput ? distDetailsInput.value.trim() : '';
@@ -763,11 +800,11 @@ async function submitDistForm() {
   const phoneCheck = validateEgyptianPhone(phoneVal);
   if (!phoneCheck.valid) { showError('sender-phone', phoneCheck.msg); isValid = false; } else { clearError('sender-phone'); }
 
-  if (!addressVal) { 
-    showError('sender-address', 'برجاء إدخال عنوان استلام الشحنة'); 
-    isValid = false; 
-  } else { 
-    clearError('sender-address'); 
+  if (!addressVal) {
+    showError('sender-address', 'برجاء إدخال عنوان استلام الشحنة');
+    isValid = false;
+  } else {
+    clearError('sender-address');
   }
 
   const insideCount = parseInt(insideVal);
@@ -781,17 +818,17 @@ async function submitDistForm() {
   else { clearError('orders-outside'); }
 
   if (!distDetailsVal) {
-    if(document.getElementById('error-dist-details')) showError('dist-details', 'برجاء كتابة تفاصيل الشحنة');
+    if (document.getElementById('error-dist-details')) showError('dist-details', 'برجاء كتابة تفاصيل الشحنة');
     isValid = false;
   } else {
-    if(document.getElementById('error-dist-details')) clearError('dist-details');
+    if (document.getElementById('error-dist-details')) clearError('dist-details');
   }
 
   if (!isValid) {
     showToast('برجاء تصحيح الأخطاء في الحقول المطلوبة ⚠️');
     return;
   }
-  
+
   const now = new Date();
   const dateStr = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -801,7 +838,7 @@ async function submitDistForm() {
     type: 'distribution',
     senderName: nameVal,
     senderPhone: phoneVal,
-    senderAddress: addressVal, 
+    senderAddress: addressVal,
     ordersInsideZayat: insideCount,
     ordersOutsideZayat: outsideCount,
     details: distDetailsVal,
@@ -839,7 +876,7 @@ initInputsHoverAdjustments();
 initCursorHoverEvents();
 
 // ── Firebase Realtime Sync Injection ──
-window.loadFirebaseData = function() {
+window.loadFirebaseData = function () {
   if (window.firebaseCategories && window.firebaseCategories.length > 0) {
     renderClientCategories();
   }
@@ -847,23 +884,23 @@ window.loadFirebaseData = function() {
 
 (async () => {
   try {
-    const { database } = await import('./api.js'); 
+    const { database } = await import('./api.js');
     const { ref, onValue } = await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js");
 
-    const db = database; 
-    
+    const db = database;
+
     onValue(ref(db, 'categories'), (snapshot) => {
       const data = snapshot.val();
       let firebaseCategories = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
       window.firebaseCategories = firebaseCategories;
-      if(currentPage === 'page-offers') renderClientCategories();
+      if (currentPage === 'page-offers') renderClientCategories();
     }, (err) => console.warn('Categories offline or syntax error:', err));
 
     onValue(ref(db, 'offers'), (snapshot) => {
       const data = snapshot.val();
       let firebaseOffers = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
       window.firebaseOffers = firebaseOffers;
-      if(currentPage === 'page-offers') renderClientCategories();
+      if (currentPage === 'page-offers') renderClientCategories();
     }, (err) => console.warn('Offers offline or syntax error:', err));
 
   } catch (e) {
