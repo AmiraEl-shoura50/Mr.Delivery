@@ -831,5 +831,5 @@
   margin:20px auto;
   border-radius:16px;
   object-fit:contain;
-  background:#fff;
+  background:unset;
 }

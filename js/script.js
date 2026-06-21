@@ -642,14 +642,25 @@ console.log("grid =", grid);
           src="${menu.menuImages?.[0] || ''}"
           style="
             width:100%;
-            height:220px;
-            object-fit:contain;
-            background:#fff;
+            height:270px;
+            object-fit:contain;        
             border-radius:12px;
           ">
 
-        <h3>${menu.restaurantName}</h3>
-
+       <h3
+          style="
+          text-align:center;
+          background:#ef4444;
+          padding:12px;
+          border-radius:8px;
+          margin-top:10px;
+          min-height:60px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          ">
+          ${menu.restaurantName}
+          </h3>
       </div>
 
     `).join('');
