@@ -5,6 +5,9 @@ const WHATSAPP_PHONE = '201009764342'; // 📱 رقم الجوال المتغي�
 let currentPage = 'page-home';
 let pageHistory = [];
 let buyStores = []; // تم الاحتفاظ بالتعريف هنا وحذفه من الأسفل لمنع تكرار التعريف الإجباري
+let restaurantMenus = [];
+
+
 
 // Firebase & Offers State
 let firebaseCategories = [];
@@ -191,13 +194,7 @@ function animateOfferCards() {
 // ── Trigger Load & Navigation From Main Home Button ──
 window.onOffersAndProductsClick = function () {
   pageHistory = ['page-home'];
-  goTo('page-offers');
-
-  if (typeof window.loadFirebaseData === 'function') {
-    window.loadFirebaseData();
-  } else {
-    renderClientCategories();
-  }
+  goTo('page-catalog-type');
 };
 
 // ── Render Client Categories Dynamically from Firebase ──
@@ -593,6 +590,94 @@ function renderBuyStores() {
 
   initCursorHoverEvents();
 }
+
+
+function openProductsSection() {
+
+  goTo('page-offers');
+
+  if (typeof window.loadFirebaseData === 'function') {
+    window.loadFirebaseData();
+  } else {
+    renderClientCategories();
+  }
+}
+function openRestaurantMenus() {
+
+  loadRestaurantMenus();
+
+  goTo('page-restaurant-menus');
+
+}
+async function loadRestaurantMenus() {
+
+  const snapshot = await get(restaurantMenusRef);
+
+  restaurantMenus = [];
+
+  snapshot.forEach(child => {
+
+    restaurantMenus.push({
+      id: child.key,
+      ...child.val()
+    });
+
+  });
+
+  const grid =
+    document.getElementById('menusGrid');
+
+  grid.innerHTML =
+    restaurantMenus.map(menu => `
+
+      <div class="offer-card"
+           onclick="openRestaurantMenu('${menu.id}')">
+
+        <img
+          src="${menu.menuImages?.[0] || ''}"
+          style="
+            width:100%;
+            height:220px;
+            object-fit:contain;
+            background:#fff;
+            border-radius:12px;
+          ">
+
+        <h3>${menu.restaurantName}</h3>
+
+      </div>
+
+    `).join('');
+}
+function openRestaurantMenu(menuId) {
+
+  const menu =
+    restaurantMenus.find(
+      x => x.id === menuId
+    );
+
+  if (!menu) return;
+
+  document.getElementById(
+    'menuRestaurantTitle'
+  ).textContent =
+    menu.restaurantName;
+
+  document.getElementById(
+    'menuImagesContainer'
+  ).innerHTML =
+
+    menu.menuImages.map(img => `
+
+      <img
+        src="${img}"
+        class="restaurant-menu-image">
+
+    `).join('');
+
+  goTo('page-menu-details');
+}
+
 // ══════════════════════════════════════════════════════════════
 // 🛍️ PURCHASE ORDER FORM LOGIC (النسخة المتوافقة تماماً مع الـ HTML الخاص بكِ)
 // ══════════════════════════════════════════════════════════════
