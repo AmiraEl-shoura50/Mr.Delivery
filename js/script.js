@@ -631,7 +631,7 @@ async function loadRestaurantMenus() {
 
   const grid =
     document.getElementById('menusGrid');
-
+console.log("grid =", grid);
   grid.innerHTML =
     restaurantMenus.map(menu => `
 
@@ -653,6 +653,8 @@ async function loadRestaurantMenus() {
       </div>
 
     `).join('');
+
+
 }
 function openRestaurantMenu(menuId) {
 
