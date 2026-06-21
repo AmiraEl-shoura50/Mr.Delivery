@@ -611,7 +611,12 @@ function openRestaurantMenus() {
 }
 async function loadRestaurantMenus() {
 
-  const snapshot = await get(restaurantMenusRef);
+ const snapshot = await window.firebaseGet(
+  window.firebaseRef(
+    window.firebaseDb,
+    'restaurantMenus'
+  )
+);
 
   restaurantMenus = [];
 
@@ -1157,9 +1162,12 @@ window.loadFirebaseData = function () {
 (async () => {
   try {
     const { database } = await import('./api.js');
-    const { ref, onValue } = await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js");
+    const { ref, onValue ,get } = await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js");
 
     const db = database;
+    window.firebaseDb = db;
+    window.firebaseGet = get;
+    window.firebaseRef = ref;
 
     onValue(ref(db, 'categories'), (snapshot) => {
       const data = snapshot.val();
