@@ -415,13 +415,27 @@
   .detail-header h2 { font-family: 'Tajawal', sans-serif; font-size: 1.8rem; font-weight: 800; }
   .detail-header p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
 
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
   .offers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.2rem;
-    max-width: 900px;
-    margin: 0 auto;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
   }
+  .offer-img { height: 100px; }
+  .offer-img-inner { font-size: 2.2rem; }
+  .offer-body { padding: 0.7rem; }
+  .offer-name { font-size: 0.82rem; }
+  .offer-place { font-size: 0.68rem; margin-bottom: 0.4rem; }
+  .offer-price { font-size: 0.88rem; }
+  .offer-old-price { font-size: 0.68rem; }
+}
 
   .offer-card {
     background: var(--card-bg);

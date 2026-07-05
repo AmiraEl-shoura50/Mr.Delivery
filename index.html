@@ -381,7 +381,40 @@
       <div class="offers-grid" id="offersGrid"></div>
     </div>
   </div>
+  <div class="page" id="page-offer-details">
+  <div style="max-width:700px;width:100%;margin:auto;padding:1rem">
+    <button class="back-btn" onclick="goTo('page-offers-detail')">→ رجوع للعروض</button>
 
+    <div id="offerDetailImgWrap" style="border-radius:16px;overflow:hidden;margin-bottom:1.5rem;background:var(--dark3)"></div>
+
+    <div class="offers-header" style="padding:0 0 1rem;text-align:right">
+      <h2 id="offerDetailName" style="font-size:1.4rem"></h2>
+      <p id="offerDetailPlace" style="margin-top:6px"></p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+      <span id="offerDetailPrice" style="font-size:1.5rem;font-weight:800;color:var(--primary)"></span>
+      <span id="offerDetailOldPrice" style="font-size:1rem;color:var(--text-muted);text-decoration:line-through"></span>
+    </div>
+
+    <div id="offerDetailBadge"></div>
+    <div id="offerDetailCountdownWrap" style="margin-top:1rem"></div>
+
+    <div class="view-only-banner" style="opacity:1;animation:none;margin-top:2rem">عرض بس — مفيش شراء أو دفع 🙌</div>
+  </div>
+</div>
+
+
+<div class="page" id="page-menu-categories">
+  <div style="max-width:900px;width:100%;margin:auto;padding:2rem">
+    <button class="back-btn" onclick="goBack()">→ رجوع</button>
+    <div class="offers-header">
+      <h2>🍽️ منيوهات المطاعم</h2>
+      <p>اختار القسم اللي يهمك</p>
+    </div>
+    <div class="categories-grid" id="menuCategoriesGrid"></div>
+  </div>
+</div>
 <div class="page" id="page-restaurant-menus">
 
   <div style="max-width:700px;width:100%;margin:auto;padding:1rem">

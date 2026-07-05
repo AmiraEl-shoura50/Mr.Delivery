@@ -6,7 +6,7 @@ let currentPage = 'page-home';
 let pageHistory = [];
 let buyStores = []; // تم الاحتفاظ بالتعريف هنا وحذفه من الأسفل لمنع تكرار التعريف الإجباري
 let restaurantMenus = [];
-
+let menuCategories = [];
 
 
 // Firebase & Offers State
@@ -202,7 +202,7 @@ window.renderClientCategories = function () {
   const grid = document.getElementById('categoriesGrid');
   if (!grid) return;
 
-  const cats = window.firebaseCategories || [];
+  const cats = (window.firebaseCategories || []).filter(c => !c.hidden);
   const offers = window.firebaseOffers || [];
 
   if (cats.length === 0) {
@@ -251,7 +251,8 @@ window.openCategory = function (catId) {
   if (!grid) return;
   grid.innerHTML = '';
 
-  const catOffers = offers.filter(o => o.catId === catId);
+const catOffers = offers.filter(o => o.catId === catId && !o.hidden && (!o.expiresAt || o.expiresAt > Date.now()));
+
   if (catOffers.length === 0) {
     grid.innerHTML = `
       <div class="empty" style="grid-column:1/-1; width:100%; text-align:center; padding: 3rem 0;">
@@ -264,34 +265,39 @@ window.openCategory = function (catId) {
     return;
   }
 
-  catOffers.forEach((offer, i) => {
-    const d = offer.old > 0 ? Math.round((1 - offer.price / offer.old) * 100) : 0;
-    const card = document.createElement('div');
-    card.className = 'offer-card';
-    card.onclick = () => showToast('هذه العروض للعرض فقط 👁️');
-    card.innerHTML = `
-      <div class="offer-img" style="background:${cat.color || '#2D1810'}; height: 160px; position: relative; border-radius: 14px 14px 0 0; overflow: hidden;">
-        ${offer.imageUrl ? `
-          <img src="${offer.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" class="offer-img-el">
-        ` : `
-          <div class="offer-img-inner" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;">${offer.emoji || '🍕'}</div>
-        `}
-        ${offer.badge ? `<div class="offer-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: white;">${offer.badge}</div>` : ''}
-        ${d > 0 ? `
-          <div class="discount-badge" style="position: absolute; top: 10px; left: 10px; background: #FF4B12; color: white; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 12px rgba(255,75,18,0.4);">خصم ${d}%</div>
-        ` : ''}
+catOffers.forEach((offer, i) => {
+  const d = offer.old > 0 ? Math.round((1 - offer.price / offer.old) * 100) : 0;
+  const card = document.createElement('div');
+  card.className = 'offer-card';
+  card.onclick = () => openOfferDetails(offer.id, cat);
+  card.innerHTML = `
+    <div class="offer-img" style="background:${cat.color || '#2D1810'}; height: 160px; position: relative; border-radius: 14px 14px 0 0; overflow: hidden;">
+      ${offer.imgUrl ? `
+  <img src="${offer.imgUrl}" style="width: 100%; height: 100%; object-fit: cover;" class="offer-img-el">
+` : `
+        <div class="offer-img-inner" style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;">${offer.emoji || '🍕'}</div>
+      `}
+      ${offer.badge ? `<div class="offer-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: white;">${offer.badge}</div>` : ''}
+      ${d > 0 ? `
+        <div class="discount-badge" style="position: absolute; top: 10px; left: 10px; background: #FF4B12; color: white; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 12px rgba(255,75,18,0.4);">خصم ${d}%</div>
+      ` : ''}
+      ${offer.expiresAt ? `
+        <div class="countdown-badge" data-expires="${offer.expiresAt}" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #FFB347; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;"></div>
+      ` : ''}
+    </div>
+    <div class="offer-body" style="padding: 1rem;">
+      <div class="offer-name" style="font-weight: 700; margin-bottom: 0.3rem;">${offer.name}</div>
+      <div class="offer-place" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📍 ${offer.place}</div>
+      <div class="offer-price-row" style="display: flex; align-items: center; gap: 0.5rem;">
+        <span class="offer-price" style="font-weight: 700; color: #FF4B12;">${offer.price} ج</span>
+        ${offer.old ? `<span class="offer-old-price" style="text-decoration: line-through; font-size: 0.85rem; color: var(--text-muted);">${offer.old} ج</span>` : ''}
       </div>
-      <div class="offer-body" style="padding: 1rem;">
-        <div class="offer-name" style="font-weight: 700; margin-bottom: 0.3rem;">${offer.name}</div>
-        <div class="offer-place" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📍 ${offer.place}</div>
-        <div class="offer-price-row" style="display: flex; align-items: center; gap: 0.5rem;">
-          <span class="offer-price" style="font-weight: 700; color: #FF4B12;">${offer.price} ج</span>
-          ${offer.old ? `<span class="offer-old-price" style="text-decoration: line-through; font-size: 0.85rem; color: var(--text-muted);">${offer.old} ج</span>` : ''}
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+startOffersCountdown();
 
   pageHistory = ['page-home', 'page-offers'];
   goTo('page-offers-detail');
@@ -603,70 +609,143 @@ function openProductsSection() {
   }
 }
 function openRestaurantMenus() {
-
-  loadRestaurantMenus();
-
-  goTo('page-restaurant-menus');
-
+  loadMenuCategories();
+  goTo('page-menu-categories');
 }
-async function loadRestaurantMenus() {
 
- const snapshot = await window.firebaseGet(
-  window.firebaseRef(
-    window.firebaseDb,
-    'restaurantMenus'
-  )
-);
+async function loadMenuCategories() {
+  const snapshot = await window.firebaseGet(window.firebaseRef(window.firebaseDb, 'menuCategories'));
+  menuCategories = [];
+  snapshot.forEach(child => {
+    menuCategories.push({ id: child.key, ...child.val() });
+  });
+  renderMenuCategories();
+}
+
+function renderMenuCategories() {
+  const grid = document.getElementById('menuCategoriesGrid');
+  if (!grid) return;
+
+  if (menuCategories.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">لا توجد أقسام مضافة بعد</div>`;
+    return;
+  }
+
+  grid.innerHTML = menuCategories.map((cat, i) => `
+    <div class="cat-card animate-card" onclick="openMenuCategory('${cat.id}')" style="animation-delay: ${i * 0.1}s; cursor: pointer;">
+      <span class="cat-emoji">${cat.emoji || '🍽️'}</span>
+      <div class="cat-name">${cat.name}</div>
+    </div>
+  `).join('');
+
+  initCursorHoverEvents();
+}
+
+async function openMenuCategory(catId) {
+  await loadRestaurantMenus(catId);
+  goTo('page-restaurant-menus');
+}
+
+async function loadRestaurantMenus(catId) {
+  const snapshot = await window.firebaseGet(window.firebaseRef(window.firebaseDb, 'restaurantMenus'));
 
   restaurantMenus = [];
-
   snapshot.forEach(child => {
+  const val = child.val();
+  if (val.hidden) return;
+  if (!catId || val.catId === catId) {
+    restaurantMenus.push({ id: child.key, ...val });
+  }
+});
 
-    restaurantMenus.push({
-      id: child.key,
-      ...child.val()
+  const grid = document.getElementById('menusGrid');
+  if (!grid) return;
+
+  grid.innerHTML = restaurantMenus.map(menu => `
+    <div class="offer-card" onclick="openRestaurantMenu('${menu.id}')">
+      <img src="${menu.menuImages?.[0] || ''}" style="width:100%;height:270px;object-fit:contain;border-radius:12px;">
+      <h3 style="text-align:center;background:#ef4444;padding:12px;border-radius:8px;margin-top:10px;min-height:60px;display:flex;align-items:center;justify-content:center;">
+        ${menu.restaurantName}
+      </h3>
+    </div>
+  `).join('');
+}
+let offersCountdownInterval = null;
+
+function startOffersCountdown() {
+  clearInterval(offersCountdownInterval);
+  offersCountdownInterval = setInterval(() => {
+    document.querySelectorAll('.countdown-badge[data-expires]').forEach(el => {
+      const expiresAt = parseInt(el.getAttribute('data-expires'));
+      const remaining = expiresAt - Date.now();
+      if (remaining <= 0) {
+        const card = el.closest('.offer-card');
+        if (card) card.remove();
+        return;
+      }
+      el.textContent = formatCountdown(remaining);
     });
 
-  });
-
-  const grid =
-    document.getElementById('menusGrid');
-console.log("grid =", grid);
-  grid.innerHTML =
-    restaurantMenus.map(menu => `
-
-      <div class="offer-card"
-           onclick="openRestaurantMenu('${menu.id}')">
-
-        <img
-          src="${menu.menuImages?.[0] || ''}"
-          style="
-            width:100%;
-            height:270px;
-            object-fit:contain;        
-            border-radius:12px;
-          ">
-
-       <h3
-          style="
-          text-align:center;
-          background:#ef4444;
-          padding:12px;
-          border-radius:8px;
-          margin-top:10px;
-          min-height:60px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          ">
-          ${menu.restaurantName}
-          </h3>
-      </div>
-
-    `).join('');
-
-
+    document.querySelectorAll('.countdown-badge-detail[data-expires]').forEach(el => {
+      const expiresAt = parseInt(el.getAttribute('data-expires'));
+      const remaining = expiresAt - Date.now();
+      if (remaining <= 0) {
+        el.textContent = 'انتهى العرض';
+        return;
+      }
+      el.textContent = `⏳ متبقي ${formatCountdown(remaining)}`;
+    });
+  }, 1000);
 }
+
+function formatCountdown(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `⏳ ${h}س ${m}د`;
+  if (m > 0) return `⏳ ${m}د ${s}ث`;
+  return `⏳ ${s}ث`;
+}
+
+
+function openOfferDetails(offerId, cat) {
+  const offers = window.firebaseOffers || [];
+  const offer = offers.find(o => o.id === offerId);
+  if (!offer) return;
+
+  const images = (offer.images && offer.images.length) ? offer.images : (offer.imgUrl ? [offer.imgUrl] : []);
+
+  const imgWrap = document.getElementById('offerDetailImgWrap');
+  if (images.length) {
+    imgWrap.innerHTML = `
+      <div style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">
+        ${images.map(url => `<img src="${url}" style="min-width:100%;max-height:320px;object-fit:cover;scroll-snap-align:start">`).join('')}
+      </div>
+      ${images.length > 1 ? `<div style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:6px">${images.length} صور — اسحب لعرض الباقي</div>` : ''}
+    `;
+  } else {
+    imgWrap.innerHTML = `<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:5rem;background:${cat?.color || '#2D1810'}">${offer.emoji || '🍕'}</div>`;
+  }
+
+  document.getElementById('offerDetailName').textContent = offer.name;
+  document.getElementById('offerDetailPlace').textContent = `📍 ${offer.place || ''}`;
+  document.getElementById('offerDetailPrice').textContent = `${offer.price} ج`;
+  document.getElementById('offerDetailOldPrice').textContent = offer.old ? `${offer.old} ج` : '';
+
+  const badgeEl = document.getElementById('offerDetailBadge');
+  badgeEl.innerHTML = offer.badge ? `<span class="card-tag">${offer.badge}</span>` : '';
+
+  const cdWrap = document.getElementById('offerDetailCountdownWrap');
+  if (offer.expiresAt && offer.expiresAt > Date.now()) {
+    cdWrap.innerHTML = `<div class="countdown-badge-detail" data-expires="${offer.expiresAt}" style="display:inline-block;background:rgba(255,179,71,0.1);color:var(--accent);padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:700"></div>`;
+  } else {
+    cdWrap.innerHTML = '';
+  }
+
+  goTo('page-offer-details');
+}
+
 function openRestaurantMenu(menuId) {
 
   const menu =
@@ -674,7 +753,7 @@ function openRestaurantMenu(menuId) {
       x => x.id === menuId
     );
 
-  if (!menu) return;
+  if (!menu || menu.hidden) return;
 
   document.getElementById(
     'menuRestaurantTitle'
