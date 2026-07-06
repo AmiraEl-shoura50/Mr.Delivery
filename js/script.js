@@ -85,12 +85,14 @@ function goTo(pageId) {
     if (target) target.classList.add('active');
 
     if (pageId === 'page-offers') {
-      pageHistory = ['page-home'];
-    } else if (pageId === 'page-offers-detail') {
-      pageHistory = ['page-home', 'page-offers'];
-    } else {
-      pageHistory.push(currentPage);
-    }
+  pageHistory = ['page-home'];
+} else if (pageId === 'page-offers-detail') {
+  pageHistory = ['page-home', 'page-offers'];
+} else if (pageId === 'page-menu-categories') {
+  pageHistory = ['page-home'];
+} else {
+  pageHistory.push(currentPage);
+}
 
     currentPage = pageId;
     updateNavDots();
@@ -744,6 +746,47 @@ function openOfferDetails(offerId, cat) {
   }
 
   goTo('page-offer-details');
+}
+
+function openMainMenu() {
+  document.getElementById('mainMenuDrawer').classList.add('open');
+  document.getElementById('mainMenuBackdrop').classList.add('show');
+  document.getElementById('mainMenuToggle').classList.add('open');
+}
+
+function closeMainMenu() {
+  document.getElementById('mainMenuDrawer').classList.remove('open');
+  document.getElementById('mainMenuBackdrop').classList.remove('show');
+  document.getElementById('mainMenuToggle').classList.remove('open');
+}
+
+function toggleMainMenu() {
+  document.getElementById('mainMenuDrawer').classList.contains('open') ? closeMainMenu() : openMainMenu();
+}
+
+function navFromMenu(target) {
+  closeMainMenu();
+  switch (target) {
+    case 'home':
+      pageHistory = [];
+      goTo('page-home');
+      break;
+    case 'buy':
+      goTo('page-buy');
+      break;
+    case 'delivery':
+      goTo('page-delivery');
+      break;
+    case 'dist':
+      goTo('page-dist');
+      break;
+    case 'offers':
+      openProductsSection();
+      break;
+    case 'menus':
+      openRestaurantMenus();
+      break;
+  }
 }
 
 function openRestaurantMenu(menuId) {

@@ -38,6 +38,28 @@
     <div class="nav-dot" title="توزيع شحنة"></div>
   </div>
 
+<button class="main-menu-toggle" id="mainMenuToggle" onclick="toggleMainMenu()" aria-label="القائمة">
+  <span class="hb-bar"></span>
+  <span class="hb-bar"></span>
+  <span class="hb-bar"></span>
+</button>
+
+<div class="main-menu-backdrop" id="mainMenuBackdrop" onclick="closeMainMenu()"></div>
+
+<div class="main-menu-drawer" id="mainMenuDrawer">
+ <div class="mm-header">
+    <div class="mm-logo-icon"><img width="42" height="42" src="https://i.postimg.cc/9FFzWPW4/IMG-20260607-032220-451.png" alt=""></div>
+    <div class="mm-brand">مستر <span>ديليفري</span></div>
+  </div>
+
+  <div class="mm-item" onclick="navFromMenu('home')"><span class="mm-icon">🏠</span> الرئيسية</div>
+  <div class="mm-item" onclick="navFromMenu('buy')"><span class="mm-icon">🛍️</span> طلب شراء</div>
+  <div class="mm-item" onclick="navFromMenu('delivery')"><span class="mm-icon">📦</span> طلب توصيل</div>
+  <div class="mm-item" onclick="navFromMenu('dist')"><span class="mm-icon">🚚</span> توزيع شحنة</div>
+  <div class="mm-item" onclick="navFromMenu('offers')"><span class="mm-icon">🔥</span> العروض  المتاحة</div>
+  <div class="mm-item" onclick="navFromMenu('menus')"><span class="mm-icon">🍽️</span> المنتجات و المنيوهات</div>
+</div>
+
   <div class="page active" id="page-home">
     <div class="home-inner" style="margin:auto">
       <div class="logo-wrap">
@@ -69,7 +91,7 @@
 
         <button class="btn-main btn-secondary" onclick="onOffersAndProductsClick()" id="btnOffers">
           <div class="btn-content">
-            <span class="btn-label">🔥 العروض و منيوهات المطاعم </span>
+            <span class="btn-label">🔥 العروض و المنيوهات  </span>
             <span class="btn-desc">شوف أحدث العروض و المنيوهات </span>
           </div>
           <div class="btn-arrow">←</div>
@@ -339,9 +361,9 @@
            onclick="openRestaurantMenus()">
 
         <div class="card-icon-wrap">🍽️</div>
-        <div class="card-title">منيوهات المطاعم</div>
+        <div class="card-title">المنتجات و المنيوهات </div>
         <div class="card-desc">
-          عرض منيوهات المطاعم
+          عرض منيوهات و المنتجات 
         </div>
 
       </div>
@@ -409,7 +431,7 @@
   <div style="max-width:900px;width:100%;margin:auto;padding:2rem">
     <button class="back-btn" onclick="goBack()">→ رجوع</button>
     <div class="offers-header">
-      <h2>🍽️ منيوهات المطاعم</h2>
+      <h2>🍽️ المنتجات و المنيوهات</h2>
       <p>اختار القسم اللي يهمك</p>
     </div>
     <div class="categories-grid" id="menuCategoriesGrid"></div>
