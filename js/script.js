@@ -1317,6 +1317,10 @@ window.loadFirebaseData = function () {
       window.firebaseOffers = firebaseOffers;
       if (currentPage === 'page-offers') renderClientCategories();
     }, (err) => console.warn('Offers offline or syntax error:', err));
+    onValue(ref(db, 'restaurantMenus'), (snapshot) => {
+      const data = snapshot.val();
+      window.allRestaurantMenus = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+    }, (err) => console.warn('RestaurantMenus offline or syntax error:', err));
 
   } catch (e) {
     console.warn('Firebase module lazy load skipped or network offline', e);
@@ -1341,3 +1345,100 @@ document.addEventListener('input', function (event) {
         }
     }
 });
+
+
+function openSearchOverlay() {
+  document.getElementById('searchOverlay').classList.add('open');
+  document.getElementById('searchResults').innerHTML = `<div class="search-empty">اكتب حرفين على الأقل للبحث...</div>`;
+  setTimeout(() => document.getElementById('globalSearchInput').focus(), 100);
+}
+
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('open');
+  document.getElementById('globalSearchInput').value = '';
+}
+
+function toggleSearch() {
+  document.getElementById('searchOverlay').classList.contains('open') ? closeSearch() : openSearchOverlay();
+}
+
+function performSearch(query) {
+  const q = query.trim().toLowerCase();
+  const resultsEl = document.getElementById('searchResults');
+  if (!resultsEl) return;
+
+  if (q.length < 2) {
+    resultsEl.innerHTML = `<div class="search-empty">اكتب حرفين على الأقل للبحث...</div>`;
+    return;
+  }
+
+  const cats = (window.firebaseCategories || []).filter(c => !c.hidden);
+  const offers = (window.firebaseOffers || []).filter(o => !o.hidden && (!o.expiresAt || o.expiresAt > Date.now()));
+  const menus = (window.allRestaurantMenus || []).filter(m => !m.hidden);
+
+  const catResults = cats.filter(c => c.name.toLowerCase().includes(q));
+  const offerResults = offers.filter(o => (o.name || '').toLowerCase().includes(q) || (o.place || '').toLowerCase().includes(q));
+  const menuResults = menus.filter(m => (m.restaurantName || '').toLowerCase().includes(q));
+
+  const total = catResults.length + offerResults.length + menuResults.length;
+
+  if (total === 0) {
+    resultsEl.innerHTML = `<div class="search-empty">🔍 لا توجد نتائج مطابقة</div>`;
+    return;
+  }
+
+  let html = '';
+
+  catResults.forEach(cat => {
+    html += `
+      <div class="search-result-item" onclick="selectSearchResult('cat','${cat.id}')">
+        <div class="sr-icon">${cat.imgUrl ? `<img src="${cat.imgUrl}">` : (cat.emoji || '📂')}</div>
+        <div class="sr-info">
+          <div class="sr-name">${cat.name}</div>
+          <div class="sr-meta">قسم عروض</div>
+        </div>
+      </div>`;
+  });
+
+  offerResults.forEach(off => {
+    html += `
+      <div class="search-result-item" onclick="selectSearchResult('offer','${off.id}')">
+        <div class="sr-icon">${off.imgUrl ? `<img src="${off.imgUrl}">` : (off.emoji || '🔥')}</div>
+        <div class="sr-info">
+          <div class="sr-name">${off.name}</div>
+          <div class="sr-meta">${off.place || 'عرض'} · ${off.price} ج</div>
+        </div>
+      </div>`;
+  });
+
+  menuResults.forEach(menu => {
+    html += `
+      <div class="search-result-item" onclick="selectSearchResult('menu','${menu.id}')">
+        <div class="sr-icon">${menu.menuImages?.[0] ? `<img src="${menu.menuImages[0]}">` : '🍽️'}</div>
+        <div class="sr-info">
+          <div class="sr-name">${menu.restaurantName}</div>
+          <div class="sr-meta">منيو مطعم</div>
+        </div>
+      </div>`;
+  });
+
+  resultsEl.innerHTML = html;
+}
+
+function selectSearchResult(type, id) {
+  closeSearch();
+  if (type === 'cat') {
+    openCategory(id);
+  } else if (type === 'offer') {
+    const offers = window.firebaseOffers || [];
+    const offer = offers.find(o => o.id === id);
+    if (!offer) return;
+    const cat = (window.firebaseCategories || []).find(c => c.id === offer.catId);
+    openOfferDetails(id, cat);
+  } else if (type === 'menu') {
+    const menu = (window.allRestaurantMenus || []).find(m => m.id === id);
+    if (!menu) return;
+    restaurantMenus = [menu];
+    openRestaurantMenu(id);
+  }
+}

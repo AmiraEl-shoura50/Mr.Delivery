@@ -38,11 +38,25 @@
     <div class="nav-dot" title="توزيع شحنة"></div>
   </div>
 
-<button class="main-menu-toggle" id="mainMenuToggle" onclick="toggleMainMenu()" aria-label="القائمة">
-  <span class="hb-bar"></span>
-  <span class="hb-bar"></span>
-  <span class="hb-bar"></span>
-</button>
+<div class="top-left-controls">
+  <button class="main-menu-toggle" id="mainMenuToggle" onclick="toggleMainMenu()" aria-label="القائمة">
+    <span class="hb-bar"></span>
+    <span class="hb-bar"></span>
+    <span class="hb-bar"></span>
+  </button>
+  <button class="search-toggle" id="searchToggle" onclick="toggleSearch()" aria-label="بحث">🔍</button>
+</div>
+
+<div class="search-overlay" id="searchOverlay" onclick="if(event.target===this) closeSearch()">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="globalSearchInput" placeholder="ابحث عن مطعم، عرض، أو قسم..." oninput="performSearch(this.value)">
+      <button class="search-close" onclick="closeSearch()">✕</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
 
 <div class="main-menu-backdrop" id="mainMenuBackdrop" onclick="closeMainMenu()"></div>
 
